@@ -11,4 +11,4 @@ The PCB without the switches and keycaps :
 
 And here is some Eagle views :
 
-![](https://image.noelshack.com/fichiers/2017/22/1496509160-topbot.png)
+![](https://image.noelshack.com/fichiers/2017/22/1496565717-topbot-png.png)

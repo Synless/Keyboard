@@ -7,7 +7,7 @@ The final product :
 
 The PCB without the switches and keycaps :
 
-![](https://image.noelshack.com/fichiers/2017/22/1496565422-1-2-low.jpg)
+![](https://image.noelshack.com/fichiers/2017/22/1496566045-1-2-2-low.jpg)
 
 And here is some Eagle views :
 

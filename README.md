@@ -5,7 +5,7 @@ The final product :
 
 ![](https://image.noelshack.com/fichiers/2017/22/1496509816-5.jpg)
 
-The populated PCB :
+The PCB without the switches and keycaps :
 
 ![](https://image.noelshack.com/fichiers/2017/22/1496565422-1-2-low.jpg)
 

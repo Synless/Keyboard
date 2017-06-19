@@ -1,0 +1,111 @@
+﻿<Window x:Class="SynlessKeyboardMapper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SynlessKeyboardMapper"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="  Synless Keyboard Mapper" Height="350" Width="895" ResizeMode="NoResize">
+    <UserControl>
+        <UserControl.DataContext>
+            <local:ViewModel/>
+        </UserControl.DataContext>
+        <UserControl.Resources>
+            <Thickness x:Key="ButtonMargin" Left="6" Top="6" Right="6" Bottom="6"/>
+            <System:Double x:Key="R1Width">45</System:Double>
+            <System:Double x:Key="R125Width">60</System:Double>
+            <System:Double x:Key="R15Width">75</System:Double>
+            <System:Double x:Key="Buttonheight">32</System:Double>
+        </UserControl.Resources>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" IsEnabled="False" Margin="12">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[0].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[0].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[1].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[1].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[2].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[2].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[3].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[3].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[4].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[4].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[5].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[5].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[6].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[6].pushedCommand}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[7].KeyChar,  UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[7].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[8].KeyChar,  UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[8].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[9].KeyChar,  UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[9].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[10].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[10].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[11].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[11].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[12].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[12].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[13].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[13].pushedCommand}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[14].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[14].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[15].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[15].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[16].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[16].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[17].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[17].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[18].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[18].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[19].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[19].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[20].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[20].pushedCommand}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R15Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[21].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[21].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}"  Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[22].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[22].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}"  Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[23].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[23].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}"  Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[24].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[24].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R15Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[25].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[25].pushedCommand}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[26].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[26].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[27].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[27].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[28].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[28].pushedCommand}" />
+                </StackPanel>
+            </StackPanel>
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="0,15,0,15"/>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="12">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[0].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[0].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[1].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[1].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[2].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[2].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[3].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[3].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[4].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[4].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[5].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[5].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[6].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[6].pushedCommand}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[7].KeyChar,  UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[7].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[8].KeyChar,  UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[8].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[9].KeyChar,  UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[9].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[10].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[10].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[11].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[11].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[12].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[12].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[13].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[13].pushedCommand}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[14].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[14].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[15].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[15].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[16].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[16].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[17].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[17].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[18].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[18].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[19].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[19].pushedCommand}"/>
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[20].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[20].pushedCommand}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R15Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[21].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[21].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}"  Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[22].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[22].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}"  Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[23].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[23].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R1Width}"  Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[24].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[24].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R15Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[25].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[25].pushedCommand}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[26].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[26].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[27].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[27].pushedCommand}" />
+                    <Button Margin="{StaticResource ButtonMargin}" Width="{StaticResource R125Width}" Height="{StaticResource Buttonheight}" Content="{Binding Keyboard.Keys[28].KeyChar, UpdateSourceTrigger=PropertyChanged}" Command="{Binding Keyboard.Keys[28].pushedCommand}" />
+                </StackPanel>                
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <CheckBox Content="Connection" FontWeight="DemiBold" Margin="150,15,15,15" VerticalAlignment="Center" IsEnabled="False"/>
+                    <Button Content="Apply" FontWeight="DemiBold"  Margin="15" Width="{StaticResource R15Width}" Height="{StaticResource Buttonheight}" Command="{Binding }"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </UserControl>
+</Window>

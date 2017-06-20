@@ -12,12 +12,6 @@ bool key[numberOfKeys] =
            true,  true,  true
 };
 
-const String flash[] =
-{
-   "e1","e2","e3","e4","e5","e6","e7","e8","e9","e10","e11","e12","e13","e14","e15","e16","e17",
-    "e18","e19","e20","e21","e22","e23","e24","e25","e26","e27","e28","e29","e30","e31","e32"
-};
-
 const uint8_t pinMod[numberOfKeys] //HARDWARE DEPENDENT
 {
   28, 41, 20, 19, 36,  37,  1,
@@ -34,14 +28,7 @@ uint8_t keyMod[]
     KEY_TAB, 'a', 's', 'd', 'f', 'g', 'h', 
     KEY_LEFT_SHIFT,'x', 'c', 'v', 'b', 
         KEY_LEFT_CTRL, KEY_LEFT_ALT, ' ',
-        
                                     KEY_UP_ARROW, KEY_RIGHT_ARROW, KEY_DOWN_ARROW, KEY_LEFT_ARROW,
-        
-  /*KEY_ESC,    '²',  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9',  '0',  ')',  '=',  KEY_BACKSPACE,
-  KEY_TAB,    'q',  'w',  'e',  'r',  't',  'y',  'u',  'i',  'o',  'p',  '$',
-  KEY_TAB,    'a',  's',  'd',  'f',  'g',  'h',  'j',  'k',  'l',  'm',  'ù',  '*',
-  KEY_LEFT_SHIFT,   '<',  'w',  'x',  'c',  'v',  'b',  'n',  ',',  ';',  ':',  '!',  
-          KEY_LEFT_CTRL, KEY_LEFT_ALT, ' ', KEY_RIGHT_ALT, KEY_RIGHT_CTRL,  KEY_UP_ARROW, KEY_DOWN_ARROW, KEY_LEFT_ARROW, KEY_RIGHT_ARROW */
 };
 
 int max_x = 512;

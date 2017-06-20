@@ -46,13 +46,15 @@ namespace SynlessKeyboardMapper
                 OnPropertyChanged("Enabled");
             }
         }
-        
 
+        public key()
+        {
+        }
         public key(byte n)
         {
             KeyChar = n.ToString();
         }
-        
+
 
         #region PropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

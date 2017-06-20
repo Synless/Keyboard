@@ -55,6 +55,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AutoCOM.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CharToByte.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="key.cs" />

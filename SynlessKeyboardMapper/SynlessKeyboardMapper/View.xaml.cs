@@ -11,7 +11,7 @@ namespace SynlessKeyboardMapper
     {
         public MainWindow()
         {
-            InitializeComponent();           
+            InitializeComponent();
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)

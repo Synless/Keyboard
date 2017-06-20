@@ -23,7 +23,7 @@ namespace SynlessKeyboardMapper
 
         public ViewModel()
         {
-            Keyboard = keyboard;            
+            Keyboard = keyboard;
         }
 
         #region PropertyChanged

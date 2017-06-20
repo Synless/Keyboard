@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO.Ports;
 using System.Windows.Input;
 
 namespace SynlessKeyboardMapper
 {
     public class keyboard : INotifyPropertyChanged
     {
+        private AutoCOM SAMD21;
+
         private List<key> keys = new List<key>();
-        public List<key> Keys
+        public  List<key> Keys
         {
             get
             {
@@ -16,14 +19,18 @@ namespace SynlessKeyboardMapper
             set
             {
                 keys = value;
-                OnPropertyChanged("Keys");      
+                OnPropertyChanged("Keys");
             }
         }
+
         private string commandToSend;
+        private static string receivedLayout;
+
         public ICommand Apply { get; set; }
         public ICommand Key { get; set; }
+
         private bool keyboardFound = true;
-        public bool KeyboardFound
+        public  bool KeyboardFound
         {
             get
             {
@@ -39,16 +46,66 @@ namespace SynlessKeyboardMapper
 
         public keyboard()
         {
-            Apply = new Command(ApplyPushed);
-            Key = new Command(keyPushed);
-            Messenger.Default.Register<object>(this, Received_Message);
-
-            for (byte n=0;n<33;n++)
+            for (byte n = 0; n < 33; n++)
             {
                 keys.Add(new key(n));
             }
+
+            SAMD21 = new AutoCOM("ping", new string[] { "pong" });
+            KeyboardFound = SAMD21.found || true;
+            if(KeyboardFound)
+            {
+                SAMD21.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
+                SAMD21._Write("ack");
+                
+            }
+            Apply = new Command(ApplyPushed);
+            Key = new Command(keyPushed);
+            Messenger.Default.Register<object>(this, Received_Message);
+        }
+        private static void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
+        {
+            System.Threading.Thread.Sleep(50);
+            SerialPort sp = (SerialPort)sender;
+            string indata = sp.ReadExisting();
+            if (indata.Length > 10 && indata.Contains("|"))
+            {
+                receivedLayout = indata;
+                Messenger.Default.Send("processLayout");
+            }
         }
 
+        private void processLayout()
+        {
+            string tmp = "";
+            foreach (char c in receivedLayout)
+            {
+                if ((c >= '0' && c <= '9') || c == '|')
+                {
+                    System.Threading.Thread.Sleep(1);
+                    tmp += c;
+                }
+            }
+            receivedLayout = tmp.Remove(tmp.Length - 1);
+
+            if (receivedLayout.Length > 10 && receivedLayout.Contains("|"))
+            {
+                var backward = KeyToKey.forward.Reverse();
+                string[] splitLayout = receivedLayout.Split('|');
+                for (int n = 0; n < splitLayout.Length && n < Keys.Count; n++)
+                {
+                    try
+                    {
+                        string tmp2 = backward[splitLayout[n]];
+                        Keys[n].KeyChar = tmp2;
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+        }
         private void Received_Message(object _message)
         {
             if(_message.ToString() == "_end")
@@ -58,6 +115,10 @@ namespace SynlessKeyboardMapper
                     Keys[n].Enabled = true;
                 }
                 return;
+            }
+            else if(_message.ToString() == "processLayout")
+            {
+                processLayout();
             }
             else
             {
@@ -76,13 +137,9 @@ namespace SynlessKeyboardMapper
                     {
                         k.KeyChar = _message.ToString();
 
-                        if (KeyToString.forward.ContainsKey(k.KeyChar))
+                        if (KeyToKey.forward.ContainsKey(k.KeyChar))
                         {
-                            k.KeyString = KeyToString.forward[k.KeyChar.ToString()];
-                        }
-                        if (k.KeyChar[0] == 'D' && k.KeyChar.Length == 2)
-                        {
-                            k.KeyChar = k.KeyChar[1].ToString();
+                            k.KeyString = KeyToKey.forward[k.KeyChar.ToString()];
                         }
                         else if(k.KeyChar.Length>1)
                         {
@@ -130,20 +187,19 @@ namespace SynlessKeyboardMapper
             commandToSend = "";
             for (int n = 0; n < Keys.Count; n++)
             {
-                commandToSend += Keys[n].KeyString + "|";
+                commandToSend += KeyToKey.forward[Keys[n].KeyChar] + "|";
             }
+            commandToSend.Remove(commandToSend.Length - 1);
+            SAMD21._Write(commandToSend);
         }
         private void keyPushed(object paramter)
         {
-            /*lastKeyboardFound = KeyboardFound;
-            KeyboardFound = false;*/
             int intKey = int.Parse(paramter.ToString());
             for(int n = 0; n < Keys.Count; n++)
             {
                 Keys[n].Enabled = false;
             }            
             Keys[intKey].Enabled = true;
-            Keys = Keys;
         }
 
         #region PropertyChanged

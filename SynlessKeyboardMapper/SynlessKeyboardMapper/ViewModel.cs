@@ -21,17 +21,9 @@ namespace SynlessKeyboardMapper
             }
         }
 
-        public ICommand Apply;
-
         public ViewModel()
         {
-            Keyboard = keyboard;
-            Apply = new Command(pushedApply);
-            
-        }
-        private void pushedApply(object paramter)
-        {
-
+            Keyboard = keyboard;            
         }
 
         #region PropertyChanged

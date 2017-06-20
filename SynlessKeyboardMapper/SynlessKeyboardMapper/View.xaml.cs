@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
+
 namespace SynlessKeyboardMapper
 {
     /// <summary>
@@ -10,12 +11,13 @@ namespace SynlessKeyboardMapper
     {
         public MainWindow()
         {
-            InitializeComponent();
-            this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
+            InitializeComponent();           
         }
-        void MainWindow_KeyDown(object sender, KeyEventArgs e)
-        {            
-            Messenger.Default.Send(e.Key.ToString());            
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            Messenger.Default.Send(e.Key.ToString());
+            e.Handled = true;
         }
     }
 }

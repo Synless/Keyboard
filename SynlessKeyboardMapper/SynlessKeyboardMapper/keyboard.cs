@@ -48,16 +48,19 @@ namespace SynlessKeyboardMapper
         {
             for (byte n = 0; n < 33; n++)
             {
-                keys.Add(new key(n));
+                keys.Add(new key());
             }
 
             SAMD21 = new AutoCOM("ping", new string[] { "pong" });
-            KeyboardFound = SAMD21.found || true;
+            KeyboardFound = SAMD21.found;
             if(KeyboardFound)
             {
                 SAMD21.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
-                SAMD21._Write("ack");
-                
+                SAMD21._Write("ack");                
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("Keyboard not found  :(");
             }
             Apply = new Command(ApplyPushed);
             Key = new Command(keyPushed);
@@ -90,7 +93,7 @@ namespace SynlessKeyboardMapper
 
             if (receivedLayout.Length > 10 && receivedLayout.Contains("|"))
             {
-                var backward = KeyToKey.forward.Reverse();
+                var backward = Key2Key.forward.Reverse();
                 string[] splitLayout = receivedLayout.Split('|');
                 for (int n = 0; n < splitLayout.Length && n < Keys.Count; n++)
                 {
@@ -137,9 +140,9 @@ namespace SynlessKeyboardMapper
                     {
                         k.KeyChar = _message.ToString();
 
-                        if (KeyToKey.forward.ContainsKey(k.KeyChar))
+                        if (Key2Key.forward_ext.ContainsKey(k.KeyChar))
                         {
-                            k.KeyString = KeyToKey.forward[k.KeyChar.ToString()];
+                            k.KeyString = Key2Key.forward_ext[k.KeyChar.ToString()];
                         }
                         else if(k.KeyChar.Length>1)
                         {
@@ -175,7 +178,7 @@ namespace SynlessKeyboardMapper
                         }
                     }
                 }
-                KeyboardFound = true;
+                //KeyboardFound = true;
             }
             for (int n = 0; n < Keys.Count; n++)
             {
@@ -184,13 +187,24 @@ namespace SynlessKeyboardMapper
         }
         private void ApplyPushed(object paramter)
         {
-            commandToSend = "";
-            for (int n = 0; n < Keys.Count; n++)
-            {
-                commandToSend += KeyToKey.forward[Keys[n].KeyChar] + "|";
+            int n = 0;
+            string keytmp = "";
+            try {
+                commandToSend = "";
+                while(n < Keys.Count)
+                {
+                    keytmp = Keys[n].KeyChar;
+                    commandToSend += Key2Key.forward_ext[Keys[n].KeyChar] + "|";
+                    n++;
+                }
+                commandToSend.Remove(commandToSend.Length - 1);
+                SAMD21._Write(commandToSend);
             }
-            commandToSend.Remove(commandToSend.Length - 1);
-            SAMD21._Write(commandToSend);
+            catch
+            {
+                System.Windows.MessageBox.Show(keytmp + " is not supported yet !");
+                SAMD21._Write("ack");
+            }
         }
         private void keyPushed(object paramter)
         {

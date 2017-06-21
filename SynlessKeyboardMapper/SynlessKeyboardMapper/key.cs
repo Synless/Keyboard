@@ -5,7 +5,7 @@ namespace SynlessKeyboardMapper
 {
     public class key : INotifyPropertyChanged
     {
-        private string keyString = "0";
+        private string keyString = "Space";
         public string KeyString
         {
             get
@@ -18,7 +18,7 @@ namespace SynlessKeyboardMapper
                 OnPropertyChanged("KeyString");
             }
         }
-        private string keyChar = "-";
+        private string keyChar = "Space";
         public string KeyChar
         {
             get

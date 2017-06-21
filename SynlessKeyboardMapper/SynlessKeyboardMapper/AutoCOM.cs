@@ -40,7 +40,7 @@ namespace SynlessKeyboardMapper
                     }
                     catch
                     {
-                        found = false;
+                        found = false;                        
                         return;
                     }
                     if (PortName.ToString() == ("COM" + _maxPort.ToString()))
@@ -48,31 +48,44 @@ namespace SynlessKeyboardMapper
                         break;
                     }
                 }
-            }
+            }            
         }
         public void _Write(string tmp)
         {
-            if (!IsOpen)
-            {
-                Open();
+            try {
+                if (!IsOpen)
+                {
+                    Open();
+                }
+                Write(tmp);
+                if (IsOpen)
+                {
+                    //Close();
+                }
             }
-            Write(tmp);
-            if (IsOpen)
+            catch
             {
-                //Close();
+
             }
         }
         public string _ReadExisting()
         {
             string tmp = "";
-            if (!IsOpen)
+            try
             {
-                Open();
+                if (!IsOpen)
+                {
+                    Open();
+                }
+                tmp = ReadExisting();
+                if (IsOpen)
+                {
+                    //Close();
+                }
             }
-            tmp = ReadExisting();
-            if (IsOpen)
+            catch
             {
-                //Close();
+
             }
             return tmp;
         }

@@ -1,16 +1,11 @@
 #include <Keyboard.h>
+//#include "Joystick.h"
 #include <avr/pgmspace.h>
-#include <FlashStorage.h>
-#define numberOfKeys  29
+#include <FlashAsEEPROM.h>
 
-bool key[numberOfKeys] =
-{
-  true, true,true,true,true,true,true,
-  true, true,true,true,true,true,true,
-  true, true,true,true,true,true,true,
-      true,  true,true,true,  true,
-           true,  true,  true
-};
+//Joystick_ _joystick;
+
+#define numberOfKeys  29
 
 const uint8_t pinMod[numberOfKeys] //HARDWARE DEPENDENT
 {
@@ -23,12 +18,19 @@ const uint8_t pinMod[numberOfKeys] //HARDWARE DEPENDENT
 //const
 uint8_t keyMod[]
 {
-    KEY_ESC, '1', '2', '3', '4', '5', KEY_BACKSPACE, 
+    KEY_ESC, '1', '2', '3', '4', '5', KEY_BACKSPACE,
     KEY_TAB, 'q', 'w', 'e', 'r', 't', 'y', 
     KEY_TAB, 'a', 's', 'd', 'f', 'g', 'h', 
     KEY_LEFT_SHIFT,'x', 'c', 'v', 'b', 
         KEY_LEFT_CTRL, KEY_LEFT_ALT, ' ',
+        
                                     KEY_UP_ARROW, KEY_RIGHT_ARROW, KEY_DOWN_ARROW, KEY_LEFT_ARROW,
+        
+  /*KEY_ESC,    '²',  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9',  '0',  ')',  '=',  KEY_BACKSPACE,
+  KEY_TAB,    'q',  'w',  'e',  'r',  't',  'y',  'u',  'i',  'o',  'p',  '$',
+  KEY_TAB,    'a',  's',  'd',  'f',  'g',  'h',  'j',  'k',  'l',  'm',  'ù',  '*',
+  KEY_LEFT_SHIFT,   '<',  'w',  'x',  'c',  'v',  'b',  'n',  ',',  ';',  ':',  '!',  
+          KEY_LEFT_CTRL, KEY_LEFT_ALT, ' ', KEY_RIGHT_ALT, KEY_RIGHT_CTRL,  KEY_UP_ARROW, KEY_DOWN_ARROW, KEY_LEFT_ARROW, KEY_RIGHT_ARROW */
 };
 
 int max_x = 512;
@@ -48,6 +50,8 @@ void setup()
     Keyboard.begin();
     Keyboard.releaseAll();
 
+    //_joystick.begin();
+
     //INPUT FOR KEYS
     for (int n = 0; n < numberOfKeys; n++) { pinMode(pinMod[n], INPUT); }
 
@@ -59,9 +63,22 @@ void setup()
     pinMode(A0, INPUT);
     pinMode(A1, INPUT);
     x = analogRead(A0);
-    y = 1023-analogRead(A1);   
+    y = 1023-analogRead(A1);
 
-    //setKeyMod(readKeyMod());
+    if (!EEPROM.isValid()) 
+    {
+        SerialUSB.println("!EEPROM.isValid()");
+    }
+    
+    if (EEPROM.isValid()) 
+    {
+        readKeyMod();
+    }
+    else
+    {
+        //FIRST TIME PLUGING THE KEYBOARD
+        storeKeyMod();
+    }
 }
 
 void loop()
@@ -70,21 +87,7 @@ void loop()
     keypress();
     joystick();
 }
-String getValue(String data, char separator, int index)
-{
-  int found = 0;
-  int strIndex[] = {0, -1};
-  int maxIndex = data.length()-1;
 
-  for(int i=0; i<=maxIndex && found<=index; i++){
-    if(data.charAt(i)==separator || i==maxIndex){
-        found++;
-        strIndex[0] = strIndex[1]+1;
-        strIndex[1] = (i == maxIndex) ? i+1 : i;
-    }
-  }
-  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
-}
 
 void serial()
 {
@@ -107,52 +110,76 @@ void serial()
          {
               if(received.length()>10)
               {
-                  setKeyMod(received);                  
-                  storeKeyMod(received);
-                  
-                  //SerialUSB.println(tmp3);
+                  writeKeyMod(received);                  
+                  storeKeyMod();                  
                   sendLayout();
               }
          }
     }
 }
-void setKeyMod(String received)
+String getValue(String data, char separator, int index)
+{
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length()-1;
+
+  for(int i=0; i<=maxIndex && found<=index; i++)
+  {
+      if(data.charAt(i)==separator || i==maxIndex)
+      {
+          found++;
+          strIndex[0] = strIndex[1]+1;
+          strIndex[1] = (i == maxIndex) ? i+1 : i;
+      }
+  }
+  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
+void writeKeyMod(String received)
 {
     String part = "0";
     for(int n = 0; n < sizeof(keyMod); n++)
     {
-      part = getValue(received,'|',n);
-      keyMod[n] = part.toInt();                    
+        part = getValue(received,'|',n);
+        keyMod[n] = part.toInt();                    
     }
 }
-FlashStorage(my_flash_store, char*);
 
-void storeKeyMod(String received)
+void storeKeyMod()
 {    
-    char tmp[150];
-    received.toCharArray(tmp,received.length());
-    //my_flash_store.write(tmp);
-    delay(200);
-    
+    SerialUSB.println("storeKeyMod");    
+    int n = 0;
+    for (n=0; n<sizeof(keyMod); n++)
+    {
+        SerialUSB.print(keyMod[n]);SerialUSB.print('|');
+        EEPROM.write(n,keyMod[n]);      
+    }
+    EEPROM.write(n,0);      
+    EEPROM.commit();
+    delay(100);    
 }
 String readKeyMod()
 {
-    char tmp2[150];
-    my_flash_store.read();
-    String tmp3 = "";
-    for(int n = 0; n < 150; n++)
+    SerialUSB.println("readKeyMod");
+    int tmp = -1;
+    int n=0;
+    for (n=0; n < sizeof(keyMod); n++)
     {
-      tmp3+=tmp2[n];
+        tmp = EEPROM.read(n); 
+        SerialUSB.print(tmp);SerialUSB.print('|');
+        keyMod[n] = tmp;      
     }
-    SerialUSB.println(tmp3);
-    return tmp3;
+    SerialUSB.println();
 }
 
 String sendLayout()
 {   
-    SerialUSB.println("Entering layout");
+    SerialUSB.println("Sending layout");
     String layout = "";
-    for (int n = 0; n < sizeof(keyMod); n++) { layout+=keyMod[n]; layout+="|"; if(n%5==0){ SerialUSB.println(" ");} }
+    for (int n = 0; n < sizeof(keyMod); n++) 
+    { 
+        layout+=keyMod[n]; 
+        layout+="|";
+    }
     SerialUSB.println(layout);
     return layout;
 }
@@ -162,8 +189,16 @@ void keypress()
     //KEYPRESS PART
     digitalWrite(46, LOW);
     for (int n = 0; n < numberOfKeys; n++)
-    { if (digitalRead(pinMod[n]) == LOW && key[n]) { key[n] = false; Keyboard.press(keyMod[n]); digitalWrite(46, HIGH); }
-      else if (digitalRead(pinMod[n]) == HIGH && !key[n]) { key[n] = true; Keyboard.release(keyMod[n]); }
+    { 
+        if (digitalRead(pinMod[n]) == LOW) 
+        { 
+            Keyboard.press(keyMod[n]); 
+            digitalWrite(46, HIGH); 
+        }
+        else if (digitalRead(pinMod[n]) == HIGH ) 
+        { 
+            Keyboard.release(keyMod[n]); 
+        }
     }
 }
 void joystick()
@@ -173,6 +208,8 @@ void joystick()
     current_y = 1023-analogRead(A1);      
     //SerialUSB.print("A0 : "); SerialUSB.println(current_x);
     //SerialUSB.print("A1 : "); SerialUSB.println(current_y);
+    //_joystick.setXAxis(current_x);
+    //_joystick.setYAxis(current_y);
     //X
     if (x - current_x > threshold)
     {   Keyboard.press(keyMod[29]);

@@ -1,9 +1,6 @@
 #include <Keyboard.h>
-//#include "Joystick.h"
 #include <avr/pgmspace.h>
 #include <FlashAsEEPROM.h>
-
-//Joystick_ _joystick;
 
 #define numberOfKeys  29
 
@@ -15,25 +12,34 @@ const uint8_t pinMod[numberOfKeys] //HARDWARE DEPENDENT
       8,  40, 3,  30,  25,
           39, 42, 18
 };
-//const
-uint8_t keyMod[]
+
+/*const*/uint8_t keyMod[]
 {
     KEY_ESC, '1', '2', '3', '4', '5', KEY_BACKSPACE,
     KEY_TAB, 'q', 'w', 'e', 'r', 't', 'y', 
     KEY_TAB, 'a', 's', 'd', 'f', 'g', 'h', 
     KEY_LEFT_SHIFT,'x', 'c', 'v', 'b', 
         KEY_LEFT_CTRL, KEY_LEFT_ALT, ' ',
-        
                                     KEY_UP_ARROW, KEY_RIGHT_ARROW, KEY_DOWN_ARROW, KEY_LEFT_ARROW,
-        
-  /*KEY_ESC,    '²',  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9',  '0',  ')',  '=',  KEY_BACKSPACE,
-  KEY_TAB,    'q',  'w',  'e',  'r',  't',  'y',  'u',  'i',  'o',  'p',  '$',
-  KEY_TAB,    'a',  's',  'd',  'f',  'g',  'h',  'j',  'k',  'l',  'm',  'ù',  '*',
-  KEY_LEFT_SHIFT,   '<',  'w',  'x',  'c',  'v',  'b',  'n',  ',',  ';',  ':',  '!',  
-          KEY_LEFT_CTRL, KEY_LEFT_ALT, ' ', KEY_RIGHT_ALT, KEY_RIGHT_CTRL,  KEY_UP_ARROW, KEY_DOWN_ARROW, KEY_LEFT_ARROW, KEY_RIGHT_ARROW */
 };
 
-bool key[numberOfKeys] =
+bool key1[numberOfKeys] =
+{
+   true, true,true,true,true,true,true,
+   true, true,true,true,true,true,true,
+   true, true,true,true,true,true,true,
+       true,  true,true,true,  true,
+            true,  true,  true
+};
+bool key2[numberOfKeys] =
+{
+   true, true,true,true,true,true,true,
+   true, true,true,true,true,true,true,
+   true, true,true,true,true,true,true,
+       true,  true,true,true,  true,
+            true,  true,  true
+};
+bool keyLock[numberOfKeys] =
  {
    true, true,true,true,true,true,true,
    true, true,true,true,true,true,true,
@@ -90,26 +96,26 @@ void setup()
     }
     
 }
+
 long tmp1 = 0;
 long tmp2 = 0;
 void loop()
 {
-    tmp1 = micros();
+    //tmp1 = micros();
     serial();
-    tmp2 = micros();
+    //tmp2 = micros();
     //SerialUSB.print("dif serial\t: "); SerialUSB.print((tmp2-tmp1)); SerialUSB.println("us"); SerialUSB.println();
-    tmp1 = micros();
+    //tmp1 = micros();
     keypress();
-    tmp2 = micros();
+    //tmp2 = micros();
     //SerialUSB.print("dif keypress\t: "); SerialUSB.print((tmp2-tmp1)); SerialUSB.println("us"); SerialUSB.println();
-    tmp1 = micros();
+    //tmp1 = micros();
     joystick();
-    tmp2 = micros();
+    //tmp2 = micros();
     //SerialUSB.print("dif joystick\t: "); SerialUSB.print((tmp2-tmp1)); SerialUSB.println("us"); SerialUSB.println();
     
-    //delay(200); 
+    //delay(200);     
 }
-
 
 void serial()
 {
@@ -139,6 +145,7 @@ void serial()
          }
     }
 }
+
 String getValue(String data, char separator, int index)
 {
   int found = 0;
@@ -156,6 +163,7 @@ String getValue(String data, char separator, int index)
   }
   return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
+
 void writeKeyMod(String received)
 {
     String part = "0";
@@ -168,7 +176,7 @@ void writeKeyMod(String received)
 
 void storeKeyMod()
 {    
-    SerialUSB.println("storeKeyMod");    
+    //SerialUSB.println("storeKeyMod");    
     int n = 0;
     for (n=0; n<sizeof(keyMod); n++)
     {
@@ -177,25 +185,26 @@ void storeKeyMod()
     }
     EEPROM.write(n,0);      
     EEPROM.commit();
-    delay(100);    
+    delay(10);    
 }
+
 String readKeyMod()
 {
-    SerialUSB.println("readKeyMod");
+    //SerialUSB.println("readKeyMod");
     int tmp = -1;
     int n=0;
     for (n=0; n < sizeof(keyMod); n++)
     {
         tmp = EEPROM.read(n); 
-        SerialUSB.print(tmp);SerialUSB.print('|');
+        //SerialUSB.print(tmp);SerialUSB.print('|');
         keyMod[n] = tmp;      
     }
-    SerialUSB.println();
+    //SerialUSB.println();
 }
 
 String sendLayout()
 {   
-    SerialUSB.println("Sending layout");
+    //SerialUSB.println("Sending layout");
     String layout = "";
     for (int n = 0; n < sizeof(keyMod); n++) 
     { 
@@ -212,21 +221,28 @@ void keypress()
     digitalWrite(46, LOW);
     for (int n = 0; n < numberOfKeys; n++)
     { 
-        if (digitalRead(pinMod[n]) == LOW && key[n]) 
-        { 
-            key[n] = false; 
-            Keyboard.press(keyMod[n]); 
-            digitalWrite(46, HIGH); 
+        key2[n] = digitalRead(pinMod[n]);
+        if(key1[n]!=key2[n]) //ONE LOOP LOW-PASS FILTER
+        {
+            key1[n]=key2[n];
         }
-        else if (digitalRead(pinMod[n]) == HIGH && !key[n]) 
-        { 
-            key[n] = true; 
-            Keyboard.release(keyMod[n]); 
+        else
+        {
+            if (key1[n] == LOW && keyLock[n]) 
+            { 
+                keyLock[n] = false; 
+                Keyboard.press(keyMod[n]); 
+                digitalWrite(46, HIGH);
+            }
+            else if (key1[n] == HIGH && !keyLock[n]) 
+            {
+                keyLock[n] = true; 
+                Keyboard.release(keyMod[n]); 
+            }
         }
     }
 }
 
-//http://forum.arduino.cc/index.php?topic=443173.0
 #if defined(__arm__) 
 int inline analogReadFast(byte ADCpin, byte prescalerBits) // inline library functions must be in header
 { 

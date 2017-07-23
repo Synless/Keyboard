@@ -1,8 +1,13 @@
 #include <Keyboard.h>
+//#include "Joystick.h"
 #include <avr/pgmspace.h>
 #include <FlashAsEEPROM.h>
+//#include "Joystick.h"
 
-#define numberOfKeys  29
+//Joystick_ Joystick;
+const bool testAutoSendMode = true;
+
+#define numberOfKeys 29
 
 const uint8_t pinMod[numberOfKeys] //HARDWARE DEPENDENT
 {
@@ -59,13 +64,14 @@ int current_y = 512;
 
 const int threshold = 150;
 
+unsigned long tmp1 = 0;
+unsigned long tmp2 = 0;
+
 void setup()
 {
     SerialUSB.begin(115200);
     Keyboard.begin();
     Keyboard.releaseAll();
-
-    //_joystick.begin();
 
     //INPUT FOR KEYS
     for (int n = 0; n < numberOfKeys; n++) { pinMode(pinMod[n], INPUT); }
@@ -77,6 +83,11 @@ void setup()
     //ANALOG SETUP
     pinMode(A0, INPUT);
     pinMode(A1, INPUT);
+    //JOYSTICK ANALOG MODE
+    /*y = 512-analogRead(A0);
+    x = 512-analogRead(A1);*/
+
+    
     x = analogRead(A0);
     y = 1023-analogRead(A1);
 
@@ -93,31 +104,10 @@ void setup()
     {
         //FIRST TIME PLUGING THE KEYBOARD
         storeKeyMod();
-    }
-    
+    }    
 }
 
-long tmp1 = 0;
-long tmp2 = 0;
-void loop()
-{
-    //tmp1 = micros();
-    serial();
-    //tmp2 = micros();
-    //SerialUSB.print("dif serial\t: "); SerialUSB.print((tmp2-tmp1)); SerialUSB.println("us"); SerialUSB.println();
-    //tmp1 = micros();
-    keypress();
-    //tmp2 = micros();
-    //SerialUSB.print("dif keypress\t: "); SerialUSB.print((tmp2-tmp1)); SerialUSB.println("us"); SerialUSB.println();
-    //tmp1 = micros();
-    joystick();
-    //tmp2 = micros();
-    //SerialUSB.print("dif joystick\t: "); SerialUSB.print((tmp2-tmp1)); SerialUSB.println("us"); SerialUSB.println();
-    
-    //delay(200);     
-}
-
-void serial()
+void inline serial()
 {
     if(SerialUSB.available() > 0)
     {
@@ -163,11 +153,10 @@ String getValue(String data, char separator, int index)
   }
   return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
-
 void writeKeyMod(String received)
 {
     String part = "0";
-    for(int n = 0; n < sizeof(keyMod); n++)
+    for(unsigned int n = 0; n < sizeof(keyMod); n++)
     {
         part = getValue(received,'|',n);
         keyMod[n] = part.toInt();                    
@@ -175,9 +164,8 @@ void writeKeyMod(String received)
 }
 
 void storeKeyMod()
-{    
-    //SerialUSB.println("storeKeyMod");    
-    int n = 0;
+{  
+    unsigned int n = 0;
     for (n=0; n<sizeof(keyMod); n++)
     {
         SerialUSB.print(keyMod[n]);SerialUSB.print('|');
@@ -185,28 +173,23 @@ void storeKeyMod()
     }
     EEPROM.write(n,0);      
     EEPROM.commit();
-    delay(10);    
+    delay(1);    
 }
-
-String readKeyMod()
+void readKeyMod()
 {
-    //SerialUSB.println("readKeyMod");
     int tmp = -1;
-    int n=0;
+    unsigned int n=0;
     for (n=0; n < sizeof(keyMod); n++)
     {
         tmp = EEPROM.read(n); 
-        //SerialUSB.print(tmp);SerialUSB.print('|');
         keyMod[n] = tmp;      
     }
-    //SerialUSB.println();
 }
 
 String sendLayout()
-{   
-    //SerialUSB.println("Sending layout");
+{
     String layout = "";
-    for (int n = 0; n < sizeof(keyMod); n++) 
+    for (unsigned int n = 0; n < sizeof(keyMod); n++) 
     { 
         layout+=keyMod[n]; 
         layout+="|";
@@ -215,36 +198,43 @@ String sendLayout()
     return layout;
 }
 
-void keypress()
+void inline keypress()
 {
-    //KEYPRESS PART
-    digitalWrite(46, LOW);
-    for (int n = 0; n < numberOfKeys; n++)
+    fastDigitalWrite(46, LOW);
+    //for (int n = numberOfKeys-1; n > 0; n--) //BACKWARD
+    for (unsigned int n = 0; n < numberOfKeys; n++)
     { 
-        key2[n] = digitalRead(pinMod[n]);
+        key1[n] = fastDigitalRead(pinMod[n]);
         if(key1[n]!=key2[n]) //ONE LOOP LOW-PASS FILTER
         {
-            key1[n]=key2[n];
+            key2[n]=key1[n];
         }
         else
-        {
-            if (key1[n] == LOW && keyLock[n]) 
+        {            
+            if (!key1[n] && keyLock[n])
             { 
                 keyLock[n] = false; 
                 Keyboard.press(keyMod[n]); 
-                digitalWrite(46, HIGH);
+                fastDigitalWrite(46, HIGH);
             }
-            else if (key1[n] == HIGH && !keyLock[n]) 
+            else if (key1[n] && !keyLock[n]) 
             {
                 keyLock[n] = true; 
                 Keyboard.release(keyMod[n]); 
+                fastDigitalWrite(46, HIGH);
             }
         }
     }
 }
 
-#if defined(__arm__) 
-int inline analogReadFast(byte ADCpin, byte prescalerBits) // inline library functions must be in header
+int dif_X = 0;
+int dif_Y = 0;
+int bigDif_X = 0;
+int bigDif_Y = 0;
+int totalX = 0;
+int totalY = 0;
+
+int inline analogReadFast(byte ADCpin) // inline library functions must be in header
 { 
     ADC->CTRLA.bit.ENABLE = 0;                     // Disable ADC
     while( ADC->STATUS.bit.SYNCBUSY == 1 );        // Wait for synchronization
@@ -258,75 +248,76 @@ int inline analogReadFast(byte ADCpin, byte prescalerBits) // inline library fun
     while( ADC->STATUS.bit.SYNCBUSY == 1 );        // Wait for synchronization
     return analogRead(ADCpin);
 }
-#else
-int inline analogReadFast(byte ADCpin, byte prescalerBits) // inline library functions must be in header
-{ 
-    byte ADCSRAoriginal = ADCSRA; 
-    ADCSRA = (ADCSRA & B11111000) | prescalerBits; 
-    int adc = analogRead(ADCpin);  
-    ADCSRA = ADCSRAoriginal;
-    return adc;
-}
-#endif
 
-
-bool releasedX = false;
-bool releasedY = false;
-void joystick()
+void inline joystick()
 {
-    //JOYSTICK //KEY_UP_ARROW,KEY_RIGHT_ARROW, KEY_DOWN_ARROW,KEY_LEFT_ARROW
-
-    current_x = analogReadFast(A0,0);
-    current_y = 1023-analogReadFast(A1,0);      
-    /*SerialUSB.print("A0 : "); SerialUSB.println(current_x);
-    SerialUSB.print("A1 : "); SerialUSB.println(current_y);
-    SerialUSB.print("releasedX : "); SerialUSB.println(releasedX);
-    SerialUSB.print("releasedY : "); SerialUSB.println(releasedY);*/
-    //Serial.println();
-    //_joystick.setXAxis(current_x);
-    //_joystick.setYAxis(current_y);
+    /*current_x = analogReadFast(A1,0);
+    Joystick.setXAxis(current_x);
+    
+    current_y = analogReadFast(A0,0);
+    Joystick.setYAxis(current_y); */ 
+    
+    
     //X
+    current_x = analogReadFast(A0);
+    current_y = 1023-analogReadFast(A1);      
+    //SerialUSB.print("A0 : "); SerialUSB.println(current_x);
+    //SerialUSB.print("A1 : "); SerialUSB.println(current_y);
     if (x - current_x > threshold)
-    {   
-        releasedX = false;
+    {
         Keyboard.press(keyMod[29]);
         Keyboard.release(keyMod[31]);        
     }
     else if (current_x - x > threshold)
-    {   
-        releasedX = false;
+    {
         Keyboard.press(keyMod[31]);
         Keyboard.release(keyMod[29]);
     }    
     else
-    {   
-        if(!releasedX)
-        {
-            releasedX = true;
-            Keyboard.release(keyMod[29]);
-            Keyboard.release(keyMod[31]);
-        }
+    {
+        Keyboard.release(keyMod[29]);
+        Keyboard.release(keyMod[31]);        
     }
     //Y
     if (y - current_y > threshold)
-    {   
-        releasedY = false;
+    {
         Keyboard.press(keyMod[30]);
         Keyboard.release(keyMod[32]);
     }    
     else if (current_y - y > threshold)
-    {   
-        releasedY = false;
+    {
         Keyboard.press(keyMod[32]);
         Keyboard.release(keyMod[30]);
     }
     else
-    {   
-        if(!releasedY)
-        {
-            releasedY = true;
-            Keyboard.release(keyMod[30]);
-            Keyboard.release(keyMod[32]);
-        }
+    {
+        Keyboard.release(keyMod[30]);
+        Keyboard.release(keyMod[32]);        
     }
+}
+
+long sum = 0;
+long current = 0;
+long mean = 1000;
+long tick = 1;
+long maxi = 1000;
+ 
+void loop()
+{    
+    serial();
+    keypress();
+    
+    joystick();
+    /*tmp2 = micros();    
+    current = (tmp2-tmp1);
+    if(tick>100)
+    {
+      maxi = max(maxi,current);
+    }
+    sum += current;
+    mean = sum/tick;
+    tick++;    
+    SerialUSB.print("dif mean\t: "); SerialUSB.print((mean)); SerialUSB.println("us");
+    SerialUSB.print("dif maxi\t: "); SerialUSB.print((maxi)); SerialUSB.println("us"); SerialUSB.println();    
+    delay(20); */    
 }

@@ -1,7 +1,12 @@
 #include <Keyboard.h>
+#include <avr/pgmspace.h>
+#include <FlashAsEEPROM.h>
 
 //#define DEBUG_KEYPRESS
 //#define DEBUG_TIME
+#define RIGHT
+//#define LEFT
+#define FLASH
 
 #define nbOfColumns 7
 #define nbOfLines 5
@@ -80,131 +85,124 @@ uint8_t pinMask[nbOfColumns] =
   0,0,0,0,0,0,0
 };
 
+void inline SerialCOM()
+{
+    if(SerialUSB.available() > 0)
+    {
+         String received = "";
+         while(SerialUSB.available() > 0)
+         {
+            received += (char)(SerialUSB.read());
+         }       
+         if(received[0]=='p' && received[1]=='i' && received[2]=='n' && received[3]=='g')
+         {
+            SerialUSB.print("pong");
+         }
+         else if(received=="ack")
+         {
+            SendLayout();
+         }
+         else
+         {
+              if(received.length()>10)
+              {
+                  WriteKeyMod(received);                  
+                  StoreKeyMod();                  
+                  SendLayout();
+              }
+         }
+    }
+}
+
+String GetValue(String data, char separator, int index)
+{
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length()-1;
+
+  for(int i=0; i<=maxIndex && found<=index; i++)
+  {
+      if(data.charAt(i)==separator || i==maxIndex)
+      {
+          found++;
+          strIndex[0] = strIndex[1]+1;
+          strIndex[1] = (i == maxIndex) ? i+1 : i;
+      }
+  }
+  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
+void WriteKeyMod(String received)
+{
+    String part = "0";
+    for(unsigned int n = 0; n < sizeof(keyMod); n++)
+    {
+        part = getValue(received,'|',n);
+        keyMod[n] = part.toInt();                    
+    }
+}
+
+void StoreKeyMod()
+{  
+    unsigned int n = 0;
+    for (n=0; n<sizeof(keyMod); n++)
+    {
+        SerialUSB.print(keyMod[n]);SerialUSB.print('|');
+        EEPROM.write(n,keyMod[n]);      
+    }
+    EEPROM.write(n,0);      
+    EEPROM.commit();
+    delayMicroseconds(1);    
+}
+void ReadKeyMod()
+{
+    int tmp = -1;
+    unsigned int n=0;
+    for (n=0; n < sizeof(keyMod); n++)
+    {
+        tmp = EEPROM.read(n); 
+        keyMod[n] = tmp;      
+    }
+}
+
+String SendLayout()
+{
+    String layout = "";
+    for (unsigned int n = 0; n < sizeof(keyMod); n++) 
+    { 
+        layout+=keyMod[n]; 
+        layout+="|";
+    }
+    SerialUSB.println(layout);
+    return layout;
+}
+
 void setup() 
 {
   SerialUSB.begin(115200);
   Keyboard.begin();
-  //PREPARING THE MASK
-  for(int n = 0; n < nbOfColumns; n++)
-  {
-    pinMask[n] == (1<<coloumns[n]);
-  }
-  
-  for(int n = 0; n < nbOfColumns; n++)
-  {
-    pinMode(coloumns[n],OUTPUT);
-    digitalWrite(coloumns[n],LOW);
-  }
-  for(int n = 0; n < nbOfLines; n++)
-  {
-    pinMode(lines[n],INPUT_PULLDOWN);
-  }
   Keyboard.releaseAll();
-}
-
-unsigned long lo = 0;
-unsigned long tick1 = 0;
-unsigned long tick2 = 0;
-long diff = 0;
-int key = 0;
-
-void loop() 
-{
-#ifdef DEBUG_TIME
-  tick1 = micros();
-#endif
-
-  //CHECK THE SWITCHES
-  Key_Press();
   
-#ifdef DEBUG_TIME
-  tick2 = micros();
-  diff = tick2 - tick1;
-  SerialUSB.println(diff);
-  delay(50);
-#endif
+  //PREPARING THE MASK
+  for(int n = 0; n < nbOfColumns; n++) { pinMask[n] == (1<<coloumns[n]); }
   
-#ifdef DEBUG_KEYPRESS
-  bool found = false;
-  for(int n = 0; n < nbKeys; n++)
-  {
-    if(key3[n])
-    {
-      false = true;
-      SerialUSB.print(n);
-      SerialUSB.print('\t');
-    }
+  //PIN PREPARATION
+  for(int n = 0; n < nbOfColumns; n++) { pinMode(coloumns[n],OUTPUT);         digitalWrite(coloumns[n],LOW); }
+  for(int n = 0; n < nbOfLines; n++)   { pinMode( lines[n],  INPUT_PULLDOWN); }  
+  
+#ifdef FLASH
+  if (!EEPROM.isValid()) { SerialUSB.println("!EEPROM.isValid()"); }
+  if (EEPROM.isValid())  { ReadKeyMod(); }
+  else 
+  {   //FIRST TIME PLUGING THE KEYBOARD
+      StoreKeyMod();
   }
-  if(!false)
-  {
-    SerialUSB.println();
-  }  
 #endif
 }
 
 void Key_Press()
-{
-  //COL0
-  digitalWrite(coloumns[0],HIGH);
-  //LINE0
-  key1[0] = digitalRead(lines[0]);
-  if(key1[0]!=key2[0])
-  {
-    key2[0] = key1[0];
-  }
-  else
-  {
-    if(key1[0] && !key3[0])
-    {
-      key3[0] = key1[0];
-      Keyboard.press(keyMod[0]);
-    }
-    else if(!key1[0] && key3[0])
-    {
-      key3[0] = key1[0];
-      Keyboard.release(keyMod[0]);
-    }
-  }
-  //LINE1
-  key1[7] = digitalRead(lines[1]);
-  if(key1[7]!=key2[7])
-  {
-    key2[7] = key1[7];
-  }
-  else
-  {
-    if(key1[7] && !key3[7])
-    {
-      key3[7] = key1[7];
-      Keyboard.press(keyMod[0]);
-    }
-    else if(!key1[7] && key3[7])
-    {
-      key3[7] = key1[7];
-      Keyboard.release(keyMod[7]);
-    }
-  }
-  //LINE2
-  key1[14] = digitalRead(lines[2]);
-  if(key1[14]!=key2[14])
-  {
-    key2[14] = key1[14];
-  }
-  else
-  {
-    if(key1[14] && !key3[14])
-    {
-      key3[14] = key1[14];
-      Keyboard.press(keyMod[14]);
-    }
-    else if(!key1[14] && key3[14])
-    {
-      key3[14] = key1[14];
-      Keyboard.release(keyMod[14]);
-    }
-  }
-  digitalWrite(coloumns[0],LOW);
-
+{  
+  //ORDER 1-2-3-4-5-6-0 FOR PRIORITY
+  
   //COL1
   digitalWrite(coloumns[1],HIGH);
   //LINE0
@@ -680,6 +678,7 @@ void Key_Press()
     }
   }
   //LINE4
+#ifdef LEFT
   key1[30] = digitalRead(lines[4]);
   if(key1[30]!=key2[30])
   {
@@ -697,7 +696,8 @@ void Key_Press()
       key3[30] = key1[30];
       Keyboard.release(keyMod[30]);
     }
-  }  
+  }
+#endif
   digitalWrite(coloumns[5],LOW);
 
   //COL6
@@ -760,4 +760,106 @@ void Key_Press()
     }
   }
   digitalWrite(coloumns[6],LOW);
+  
+  //COL0
+  digitalWrite(coloumns[0],HIGH);
+  //LINE0
+  key1[0] = digitalRead(lines[0]);
+  if(key1[0]!=key2[0])
+  {
+    key2[0] = key1[0];
+  }
+  else
+  {
+    if(key1[0] && !key3[0])
+    {
+      key3[0] = key1[0];
+      Keyboard.press(keyMod[0]);
+    }
+    else if(!key1[0] && key3[0])
+    {
+      key3[0] = key1[0];
+      Keyboard.release(keyMod[0]);
+    }
+  }
+  //LINE1
+  key1[7] = digitalRead(lines[1]);
+  if(key1[7]!=key2[7])
+  {
+    key2[7] = key1[7];
+  }
+  else
+  {
+    if(key1[7] && !key3[7])
+    {
+      key3[7] = key1[7];
+      Keyboard.press(keyMod[0]);
+    }
+    else if(!key1[7] && key3[7])
+    {
+      key3[7] = key1[7];
+      Keyboard.release(keyMod[7]);
+    }
+  }
+  //LINE2
+  key1[14] = digitalRead(lines[2]);
+  if(key1[14]!=key2[14])
+  {
+    key2[14] = key1[14];
+  }
+  else
+  {
+    if(key1[14] && !key3[14])
+    {
+      key3[14] = key1[14];
+      Keyboard.press(keyMod[14]);
+    }
+    else if(!key1[14] && key3[14])
+    {
+      key3[14] = key1[14];
+      Keyboard.release(keyMod[14]);
+    }
+  }
+  digitalWrite(coloumns[0],LOW);
+}
+
+#ifdef DEBUG_TIME
+unsigned long tick1 = 0;
+unsigned long tick2 = 0;
+long diff = 0;
+#endif
+
+void loop() 
+{
+#ifdef DEBUG_TIME
+  tick1 = micros();
+#endif
+
+  //CHECK THE SWITCHES
+  if(SerialUSB) { SerialCOM(); }
+  Key_Press();
+  
+#ifdef DEBUG_TIME
+  tick2 = micros();
+  diff = tick2 - tick1;
+  SerialUSB.println(diff);
+  delay(50);
+#endif
+  
+#ifdef DEBUG_KEYPRESS
+  bool found = false;
+  for(int n = 0; n < nbKeys; n++)
+  {
+    if(key3[n])
+    {
+      false = true;
+      SerialUSB.print(n);
+      SerialUSB.print('\t');
+    }
+  }
+  if(!false)
+  {
+    SerialUSB.println();
+  }  
+#endif
 }

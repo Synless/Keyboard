@@ -1,46 +1,56 @@
 #include <Keyboard.h>
 
-//#define DEBUG
+//#define DEBUG_KEYPRESS
+//#define DEBUG_TIME
 
 #define nbOfColumns 7
 #define nbOfLines 5
+#define nbKeys 35
 
 int coloumns[nbOfColumns] = { 38, 22, 24, 0, 9, 18, 17 };
 int lines[nbOfLines]      = { 23, 2, 1, 3, 4 };
 
-bool key1[31]
+bool key1[nbKeys]
 {
   false,false,false,false,false,false,false,
   false,false,false,false,false,false,false,
   false,false,false,false,false,false,false,
       false,false,false,false,false,
       false,false,false,false,false,
+      
+      false,false,false,false
 };
-bool key2[31]
+bool key2[nbKeys]
 {
   false,false,false,false,false,false,false,
   false,false,false,false,false,false,false,
   false,false,false,false,false,false,false,
       false,false,false,false,false,
       false,false,false,false,false,
+      
+      false,false,false,false
 };
-bool key3[31]
+bool key3[nbKeys]
 {
   false,false,false,false,false,false,false,
   false,false,false,false,false,false,false,
   false,false,false,false,false,false,false,
       false,false,false,false,false,
       false,false,false,false,false,
+      
+      false,false,false,false
 };
 
 
-uint8_t keyMod[31]
+uint8_t keyMod[nbKeys]
 {
     KEY_ESC, '1', '2', '3', '4', '5', KEY_RETURN,
     KEY_TAB, 'q', 'w', 'e', 'r', 't', 'y', 
     KEY_TAB, 'a', 's', 'd', 'f', 'g', 'h', 
     KEY_LEFT_SHIFT,'x', 'c', 'v', 'b', 
-        KEY_LEFT_CTRL, KEY_LEFT_GUI, KEY_LEFT_ALT,' ',' '
+        KEY_LEFT_CTRL, KEY_LEFT_GUI, KEY_LEFT_ALT,' ',' ',
+        
+        KEY_DOWN_ARROW,KEY_UP_ARROW,KEY_LEFT_ARROW,KEY_RIGHT_ARROW
 };
 
 const EPortType port[nbOfColumns] = 
@@ -104,6 +114,7 @@ void loop()
   tick1 = micros();
 #endif
 
+  //CHECK THE SWITCHES
   Key_Press();
   
 #ifdef DEBUG_TIME
@@ -111,6 +122,23 @@ void loop()
   diff = tick2 - tick1;
   SerialUSB.println(diff);
   delay(50);
+#endif
+  
+#ifdef DEBUG_KEYPRESS
+  bool found = false;
+  for(int n = 0; n < nbKeys; n++)
+  {
+    if(key3[n])
+    {
+      false = true;
+      SerialUSB.print(n);
+      SerialUSB.print('\t');
+    }
+  }
+  if(!false)
+  {
+    SerialUSB.println();
+  }  
 #endif
 }
 

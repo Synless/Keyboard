@@ -1,5 +1,7 @@
 #include <Keyboard.h>
 
+//#define DEBUG
+
 #define nbOfColumns 7
 #define nbOfLines 5
 
@@ -72,22 +74,20 @@ void setup()
 {
   SerialUSB.begin(115200);
   Keyboard.begin();
+  //PREPARING THE MASK
   for(int n = 0; n < nbOfColumns; n++)
   {
     pinMask[n] == (1<<coloumns[n]);
   }
+  
   for(int n = 0; n < nbOfColumns; n++)
   {
-    delay(100);
     pinMode(coloumns[n],OUTPUT);
     digitalWrite(coloumns[n],LOW);
   }
-  delay(100);
   for(int n = 0; n < nbOfLines; n++)
   {
-    delay(100);
-    pinMode(lines[n],INPUT_PULLDOWN);    
-    //digitalWrite(lines[n],LOW);
+    pinMode(lines[n],INPUT_PULLDOWN);
   }
   Keyboard.releaseAll();
 }
@@ -100,8 +100,22 @@ int key = 0;
 
 void loop() 
 {
+#ifdef DEBUG_TIME
   tick1 = micros();
+#endif
 
+  Key_Press();
+  
+#ifdef DEBUG_TIME
+  tick2 = micros();
+  diff = tick2 - tick1;
+  SerialUSB.println(diff);
+  delay(50);
+#endif
+}
+
+void Key_Press()
+{
   //COL0
   digitalWrite(coloumns[0],HIGH);
   //LINE0
@@ -116,13 +130,11 @@ void loop()
     {
       key3[0] = key1[0];
       Keyboard.press(keyMod[0]);
-      SerialUSB.println("Pressed - 0");
     }
     else if(!key1[0] && key3[0])
     {
       key3[0] = key1[0];
       Keyboard.release(keyMod[0]);
-      SerialUSB.println("Released - 0");
     }
   }
   //LINE1
@@ -137,13 +149,11 @@ void loop()
     {
       key3[7] = key1[7];
       Keyboard.press(keyMod[0]);
-      SerialUSB.println("Pressed - 7");
     }
     else if(!key1[7] && key3[7])
     {
       key3[7] = key1[7];
       Keyboard.release(keyMod[7]);
-      SerialUSB.println("Released - 7");
     }
   }
   //LINE2
@@ -158,13 +168,11 @@ void loop()
     {
       key3[14] = key1[14];
       Keyboard.press(keyMod[14]);
-      SerialUSB.println("Pressed - 14");
     }
     else if(!key1[14] && key3[14])
     {
       key3[14] = key1[14];
       Keyboard.release(keyMod[14]);
-      SerialUSB.println("Released - 14");
     }
   }
   digitalWrite(coloumns[0],LOW);
@@ -183,13 +191,11 @@ void loop()
     {
       key3[1] = key1[1];
       Keyboard.press(keyMod[1]);
-      SerialUSB.println("Pressed - 1");
     }
     else if(!key1[1] && key3[1])
     {
       key3[1] = key1[1];
       Keyboard.release(keyMod[1]);
-      SerialUSB.println("Released - 1");
     }
   }
   //LINE1
@@ -204,13 +210,11 @@ void loop()
     {
       key3[8] = key1[8];
       Keyboard.press(keyMod[8]);
-      SerialUSB.println("Pressed - 8");
     }
     else if(!key1[8] && key3[8])
     {
       key3[8] = key1[8];
       Keyboard.release(keyMod[8]);
-      SerialUSB.println("Released - 8");
     }
   }
   //LINE2
@@ -225,13 +229,11 @@ void loop()
     {
       key3[15] = key1[15];
       Keyboard.press(keyMod[15]);
-      SerialUSB.println("Pressed - 15");
     }
     else if(!key1[15] && key3[15])
     {
       key3[15] = key1[15];
       Keyboard.release(keyMod[15]);
-      SerialUSB.println("Released - 15");
     }
   }
   //LINE3
@@ -246,13 +248,11 @@ void loop()
     {
       key3[21] = key1[21];
       Keyboard.press(keyMod[21]);
-      SerialUSB.println("Pressed - 21");
     }
     else if(!key1[21] && key3[21])
     {
       key3[21] = key1[21];
       Keyboard.release(keyMod[21]);
-      SerialUSB.println("Released - 21");
     }
   }
   //LINE4
@@ -267,13 +267,11 @@ void loop()
     {
       key3[26] = key1[26];
       Keyboard.press(keyMod[26]);
-      SerialUSB.println("Pressed - 26");
     }
     else if(!key1[26] && key3[26])
     {
       key3[26] = key1[26];
       Keyboard.release(keyMod[26]);
-      SerialUSB.println("Released - 26");
     }
   }  
   digitalWrite(coloumns[1],LOW);
@@ -292,13 +290,11 @@ void loop()
     {
       key3[2] = key1[2];
       Keyboard.press(keyMod[2]);
-      SerialUSB.println("Pressed - 2");
     }
     else if(!key1[2] && key3[2])
     {
       key3[2] = key1[2];
       Keyboard.release(keyMod[2]);
-      SerialUSB.println("Released - 2");
     }
   }
   //LINE1
@@ -313,13 +309,11 @@ void loop()
     {
       key3[9] = key1[9];
       Keyboard.press(keyMod[9]);
-      SerialUSB.println("Pressed - 9");
     }
     else if(!key1[9] && key3[9])
     {
       key3[9] = key1[9];
       Keyboard.release(keyMod[9]);
-      SerialUSB.println("Released - 9");
     }
   }
   //LINE2
@@ -334,13 +328,11 @@ void loop()
     {
       key3[16] = key1[16];
       Keyboard.press(keyMod[16]);
-      SerialUSB.println("Pressed - 16");
     }
     else if(!key1[16] && key3[16])
     {
       key3[16] = key1[16];
       Keyboard.release(keyMod[16]);
-      SerialUSB.println("Released - 16");
     }
   }
   //LINE3
@@ -355,13 +347,11 @@ void loop()
     {
       key3[22] = key1[22];
       Keyboard.press(keyMod[22]);
-      SerialUSB.println("Pressed - 22");
     }
     else if(!key1[22] && key3[22])
     {
       key3[22] = key1[22];
       Keyboard.release(keyMod[22]);
-      SerialUSB.println("Released - 22");
     }
   }
   //LINE4
@@ -376,13 +366,11 @@ void loop()
     {
       key3[27] = key1[27];
       Keyboard.press(keyMod[27]);
-      SerialUSB.println("Pressed - 27");
     }
     else if(!key1[27] && key3[27])
     {
       key3[27] = key1[27];
       Keyboard.release(keyMod[27]);
-      SerialUSB.println("Released - 27");
     }
   }
   digitalWrite(coloumns[2],LOW);
@@ -401,13 +389,11 @@ void loop()
     {
       key3[3] = key1[3];
       Keyboard.press(keyMod[3]);
-      SerialUSB.println("Pressed - 3");
     }
     else if(!key1[3] && key3[3])
     {
       key3[3] = key1[3];
       Keyboard.release(keyMod[3]);
-      SerialUSB.println("Released - 3");
     }
   }
   //LINE1
@@ -422,13 +408,11 @@ void loop()
     {
       key3[10] = key1[10];
       Keyboard.press(keyMod[10]);
-      SerialUSB.println("Pressed - 10");
     }
     else if(!key1[10] && key3[10])
     {
       key3[10] = key1[10];
       Keyboard.release(keyMod[10]);
-      SerialUSB.println("Released - 10");
     }
   }
   //LINE2
@@ -443,13 +427,11 @@ void loop()
     {
       key3[17] = key1[17];
       Keyboard.press(keyMod[17]);
-      SerialUSB.println("Pressed - 17");
     }
     else if(!key1[17] && key3[17])
     {
       key3[17] = key1[17];
       Keyboard.release(keyMod[17]);
-      SerialUSB.println("Released - 17");
     }
   }
   //LINE3
@@ -464,13 +446,11 @@ void loop()
     {
       key3[23] = key1[23];
       Keyboard.press(keyMod[23]);
-      SerialUSB.println("Pressed - 23");
     }
     else if(!key1[23] && key3[23])
     {
       key3[23] = key1[23];
       Keyboard.release(keyMod[23]);
-      SerialUSB.println("Released - 23");
     }
   }
   //LINE4
@@ -485,13 +465,11 @@ void loop()
     {
       key3[28] = key1[28];
       Keyboard.press(keyMod[28]);
-      SerialUSB.println("Pressed - 28");
     }
     else if(!key1[28] && key3[28])
     {
       key3[28] = key1[28];
       Keyboard.release(keyMod[28]);
-      SerialUSB.println("Released - 28");
     }
   }  
   digitalWrite(coloumns[3],LOW);
@@ -510,13 +488,11 @@ void loop()
     {
       key3[4] = key1[4];
       Keyboard.press(keyMod[4]);
-      SerialUSB.println("Pressed - 4");
     }
     else if(!key1[4] && key3[4])
     {
       key3[4] = key1[4];
       Keyboard.release(keyMod[4]);
-      SerialUSB.println("Released - 4");
     }
   }
   //LINE1
@@ -531,13 +507,11 @@ void loop()
     {
       key3[11] = key1[11];
       Keyboard.press(keyMod[11]);
-      SerialUSB.println("Pressed - 11");
     }
     else if(!key1[11] && key3[11])
     {
       key3[11] = key1[11];
       Keyboard.release(keyMod[11]);
-      SerialUSB.println("Released - 11");
     }
   }
   //LINE2
@@ -552,13 +526,11 @@ void loop()
     {
       key3[18] = key1[18];
       Keyboard.press(keyMod[18]);
-      SerialUSB.println("Pressed - 18");
     }
     else if(!key1[18] && key3[18])
     {
       key3[18] = key1[18];
       Keyboard.release(keyMod[18]);
-      SerialUSB.println("Released - 18");
     }
   }
   //LINE3
@@ -573,13 +545,11 @@ void loop()
     {
       key3[24] = key1[24];
       Keyboard.press(keyMod[24]);
-      SerialUSB.println("Pressed - 24");
     }
     else if(!key1[24] && key3[24])
     {
       key3[24] = key1[24];
       Keyboard.release(keyMod[24]);
-      SerialUSB.println("Released - 24");
     }
   }
   //LINE4
@@ -594,13 +564,11 @@ void loop()
     {
       key3[29] = key1[29];
       Keyboard.press(keyMod[29]);
-      SerialUSB.println("Pressed - 29");
     }
     else if(!key1[29] && key3[29])
     {
       key3[29] = key1[29];
       Keyboard.release(keyMod[29]);
-      SerialUSB.println("Released - 29");
     }
   }  
   digitalWrite(coloumns[4],LOW);
@@ -619,13 +587,11 @@ void loop()
     {
       key3[5] = key1[5];
       Keyboard.press(keyMod[5]);
-      SerialUSB.println("Pressed - 5");
     }
     else if(!key1[5] && key3[5])
     {
       key3[5] = key1[5];
       Keyboard.release(keyMod[5]);
-      SerialUSB.println("Released - 5");
     }
   }
   //LINE1
@@ -640,13 +606,11 @@ void loop()
     {
       key3[12] = key1[12];
       Keyboard.press(keyMod[12]);
-      SerialUSB.println("Pressed - 12");
     }
     else if(!key1[12] && key3[12])
     {
       key3[12] = key1[12];
       Keyboard.release(keyMod[12]);
-      SerialUSB.println("Released - 12");
     }
   }
   //LINE2
@@ -661,13 +625,11 @@ void loop()
     {
       key3[19] = key1[19];
       Keyboard.press(keyMod[19]);
-      SerialUSB.println("Pressed - 19");
     }
     else if(!key1[19] && key3[19])
     {
       key3[19] = key1[19];
       Keyboard.release(keyMod[19]);
-      SerialUSB.println("Released - 19");
     }
   }
   //LINE3
@@ -682,13 +644,11 @@ void loop()
     {
       key3[25] = key1[25];
       Keyboard.press(keyMod[25]);
-      SerialUSB.println("Pressed - 25");
     }
     else if(!key1[25] && key3[25])
     {
       key3[25] = key1[25];
       Keyboard.release(keyMod[25]);
-      SerialUSB.println("Released - 25");
     }
   }
   //LINE4
@@ -703,13 +663,11 @@ void loop()
     {
       key3[30] = key1[30];
       Keyboard.press(keyMod[30]);
-      SerialUSB.println("Pressed - 30");
     }
     else if(!key1[30] && key3[30])
     {
       key3[30] = key1[30];
       Keyboard.release(keyMod[30]);
-      SerialUSB.println("Released - 30");
     }
   }  
   digitalWrite(coloumns[5],LOW);
@@ -728,13 +686,11 @@ void loop()
     {
       key3[6] = key1[6];
       Keyboard.press(keyMod[6]);
-      SerialUSB.println("Pressed - 6");
     }
     else if(!key1[6] && key3[6])
     {
       key3[6] = key1[6];
       Keyboard.release(keyMod[6]);
-      SerialUSB.println("Released - 6");
     }
   }
   //LINE1
@@ -749,13 +705,11 @@ void loop()
     {
       key3[13] = key1[13];
       Keyboard.press(keyMod[13]);
-      SerialUSB.println("Pressed - 13");
     }
     else if(!key1[13] && key3[13])
     {
       key3[13] = key1[13];
       Keyboard.release(keyMod[13]);
-      SerialUSB.println("Released - 13");
     }
   }
   //LINE2
@@ -770,19 +724,12 @@ void loop()
     {
       key3[20] = key1[20];
       Keyboard.press(keyMod[20]);
-      SerialUSB.println("Pressed - 20");
     }
     else if(!key1[20] && key3[20])
     {
       key3[20] = key1[20];
       Keyboard.release(keyMod[20]);
-      SerialUSB.println("Released - 20");
     }
   }
   digitalWrite(coloumns[6],LOW);
-
-  tick2 = micros();
-  diff = tick2 - tick1;
-  //SerialUSB.println(diff);
-  //delay(50);
 }

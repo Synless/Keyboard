@@ -5,12 +5,27 @@ namespace SynlessKeyboardMapper
     public class AutoCOM : SerialPort
     {
         public bool found = false;
+        public bool openFail = false;
         int[] _baudrate = { 115200, 9600, 19200, 38400  };
 
-        public AutoCOM(string _querry, string[] _answers, int _maxPort = 20, int waitTime = 20)
+        ~AutoCOM()
+        {
+            try
+            {
+                if (IsOpen)
+                {
+                    Close();
+                }
+            }
+            catch
+            {
+
+            }
+        }
+        public AutoCOM(string _querry, string[] _answers, int _maxPort = 50, int waitTime = 50)
         {
             //GET ALL COM PORT CURRENTLY AVAILABLE (LIKE UNDER DEVICE MANAGER)
-            string[] _ports = SerialPort.GetPortNames();
+            string[] _ports = GetPortNames();
 
             //SCANNING THROUGH BAUDRATE, LIKELY TO BE 9600 OR 19200
             foreach (int b in _baudrate)
@@ -22,7 +37,20 @@ namespace SynlessKeyboardMapper
                     PortName = p;
                     try
                     {
-                        Open();
+                        openFail = false;
+                        if (!IsOpen)
+                        {
+                            try
+                            {
+                                Open();
+                            }
+                            catch
+                            {
+                                openFail = true;
+                                found = false;
+                                continue;
+                            }
+                        }
                         WriteLine(_querry);
                         System.Threading.Thread.Sleep(waitTime);
                         string received = ReadExisting();
@@ -40,7 +68,7 @@ namespace SynlessKeyboardMapper
                     }
                     catch
                     {
-                        found = false;                        
+                        found = false;
                         return;
                     }
                     if (PortName.ToString() == ("COM" + _maxPort.ToString()))
@@ -48,7 +76,7 @@ namespace SynlessKeyboardMapper
                         break;
                     }
                 }
-            }            
+            }
         }
         public void _Write(string tmp)
         {

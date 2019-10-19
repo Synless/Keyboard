@@ -42,8 +42,6 @@ namespace SynlessKeyboardMapper
                 OnPropertyChanged("KeyboardFound");
             }
         }
-        private bool lastKeyboardFound = false;
-
         public keyboard()
         {
             for (byte n = 0; n < 33; n++)
@@ -56,14 +54,18 @@ namespace SynlessKeyboardMapper
             if(KeyboardFound)
             {
                 SAMD21.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
-                SAMD21._Write("ack");                
+                SAMD21._Write("ack");
             }
-            else
+            else if(!SAMD21.openFail)
             {
-                System.Windows.MessageBox.Show("Keyboard not found  :(");
+                System.Windows.MessageBox.Show("Keyboard not found\nMake sure the keyboard is plugged in");
+            }
+            else if(SAMD21.openFail)
+            {
+                System.Windows.MessageBox.Show("Keyboard not found\nMake sure the COM port is not blocked");
             }
             Apply = new Command(ApplyPushed);
-            Key = new Command(keyPushed);
+            Key = new Command(KeyPushed);
             Messenger.Default.Register<object>(this, Received_Message);
         }
         private static void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
@@ -78,7 +80,7 @@ namespace SynlessKeyboardMapper
             }
         }
 
-        private void processLayout()
+        private void ProcessLayout()
         {
             string tmp = "";
             foreach (char c in receivedLayout)
@@ -104,7 +106,7 @@ namespace SynlessKeyboardMapper
                     }
                     catch
                     {
-
+                        Keys[n].KeyChar = null;
                     }
                 }
             }
@@ -121,7 +123,7 @@ namespace SynlessKeyboardMapper
             }
             else if(_message.ToString() == "processLayout")
             {
-                processLayout();
+                ProcessLayout();
             }
             else
             {
@@ -189,12 +191,20 @@ namespace SynlessKeyboardMapper
         {
             int n = 0;
             string keytmp = "";
-            try {
+            try
+            {
                 commandToSend = "";
                 while(n < Keys.Count)
                 {
                     keytmp = Keys[n].KeyChar;
-                    commandToSend += Key2Key.forward_ext[Keys[n].KeyChar] + "|";
+                    if(keytmp!=null)
+                    {
+                        commandToSend += Key2Key.forward_ext[Keys[n].KeyChar] + "|";
+                    }
+                    else
+                    {
+                        commandToSend += "0|";
+                    }
                     n++;
                 }
                 commandToSend.Remove(commandToSend.Length - 1);
@@ -206,13 +216,13 @@ namespace SynlessKeyboardMapper
                 SAMD21._Write("ack");
             }
         }
-        private void keyPushed(object paramter)
+        private void KeyPushed(object paramter)
         {
             int intKey = int.Parse(paramter.ToString());
             for(int n = 0; n < Keys.Count; n++)
             {
                 Keys[n].Enabled = false;
-            }            
+            }
             Keys[intKey].Enabled = true;
         }
 

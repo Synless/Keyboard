@@ -10,9 +10,7 @@
 const int coloumns[nbOfColumns] = { 38, 22, 24, 0, 9, 18, 17 };
 const int lines[nbOfLines]      = { 23, 2, 1, 3, 4 };
 
-bool key1[nbKeys]{false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false};
-bool key2[nbKeys]{false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false};
-bool key3[nbKeys]{false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false};
+bool key1[nbKeys],key2[nbKeys],key3[nbKeys] = { 0 };
 
 const uint8_t keyMod1[nbKeys] //LAYOUT
 {
@@ -20,7 +18,7 @@ const uint8_t keyMod1[nbKeys] //LAYOUT
     KEY_TAB, 'q', 'w', 'e', 'r', 't', 'y', 
     KEY_TAB, 'a', 's', 'd', 'f', 'g', 'h', 
     KEY_LEFT_SHIFT,'x', 'c', 'v', 'b', 
-        KEY_LEFT_CTRL, KEY_LEFT_GUI, KEY_LEFT_ALT, 0x20,0x20,
+    KEY_LEFT_CTRL, KEY_LEFT_GUI, KEY_LEFT_ALT, 0x20,0x20,
         
                                       KEY_UP_ARROW,
                               KEY_LEFT_ARROW,KEY_RIGHT_ARROW,
@@ -32,7 +30,7 @@ const uint8_t keyMod2[nbKeys] //LAYOUT
     KEY_TAB, 'u', 'i', 'o', 'p', '[', ']', 
     KEY_TAB, 'j', 'k', 'l', ';', '\'', '\\', 
     KEY_RIGHT_SHIFT,'n', 'm', ',', '.', 
-        KEY_RIGHT_CTRL, KEY_RIGHT_GUI, KEY_RIGHT_ALT, 0x20,0x20,
+    KEY_RIGHT_CTRL, KEY_RIGHT_GUI, KEY_RIGHT_ALT, 0x20,0x20,
         
                                       KEY_UP_ARROW,
                               KEY_LEFT_ARROW,KEY_RIGHT_ARROW,
@@ -182,7 +180,7 @@ void loop()
     Joystick();
     if(!isFirstLayer)
     {
-        SerialCOM();
+        //SerialCOM();
     }
 //  SerialCOM();    
 //

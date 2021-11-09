@@ -1,5 +1,5 @@
-# Keyboard
-Homemade mechanical keyboard using Atmel SAMD21 and Cherry MX switches.
+# Gaming keypad
+Mechanical keypad using 2x ATMEL32U4 and Cherry MX switches.
 
 The final product :
 

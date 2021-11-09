@@ -1,5 +1,5 @@
 # Gaming keypad
-Mechanical keypad using 2x ATMEL32U4 and Cherry MX switches.
+Mechanical keypad using 2x ATMEL32U4, USB HUB and Cherry MX switches.
 
 The final product :
 

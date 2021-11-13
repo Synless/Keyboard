@@ -238,13 +238,11 @@ extern "C"{
 #endif
 
 
+//------------------------JOYSTICK VARAIBLES - START
+bool useJoystick = true;
 
-
-
-/** \brief keyboard_init
- *
- * FIXME: needs doc
- */
+int x_thrs = 100;
+int y_thrs = 100;
 
 int16_t x_startAnalogValue = 0;
 int16_t y_startAnalogValue = 0;
@@ -254,10 +252,15 @@ int16_t x_prev_analogValue = 0;
 int16_t y_prev_analogValue = 0;
 int16_t x_diff = 0;
 int16_t y_diff = 0;
+
 bool b_right = false;
 bool b_left = false;
 bool b_up = false;
 bool b_down = false;
+
+bool left_right_or_up_down = false;
+//------------------------JOYSTICK VARAIBLES - END
+
 
 void keyboard_init(void) {
     timer_init();
@@ -306,8 +309,12 @@ void keyboard_init(void) {
 #endif
 
 	//analog.c
-    x_startAnalogValue = (analogReadPin(F7) + analogReadPin(F7) + analogReadPin(F7) + analogReadPin(F7))>>2;
-    y_startAnalogValue = (analogReadPin(F6) + analogReadPin(F6) + analogReadPin(F6) + analogReadPin(F6))>>2;
+    //------------------------JOYSTICK INIT - START    
+    x_startAnalogValue = analogReadPin(F7);
+    y_startAnalogValue = analogReadPin(F6);
+    setPinOutput(F1);
+    setPinOutput(F4);
+    //------------------------JOYSTICK INIT - END   
 
     keyboard_post_init_kb(); /* Always keep this last */
 }
@@ -451,82 +458,95 @@ MATRIX_LOOP_END:
         keyboard_set_leds(led_status);
     }
 
+    //analog.c
+    //------------------------JOYSTICK LOOP - START    
+    if(useJoystick)
+    {
+        left_right_or_up_down = !left_right_or_up_down;
+        
+        writePinHigh(F4);
 
-    static int x_thrs = 60;
-    static int y_thrs = 60;
-	//analog.c
-    x_analogValue = analogReadPin(F7);
-    y_analogValue = analogReadPin(F6);
+        if(left_right_or_up_down)
+        {
+            y_analogValue = analogReadPin(F6);
+            y_diff= y_startAnalogValue - y_analogValue;
 
-    //low-pass filtering
-    x_analogValue = (x_analogValue + (3*x_prev_analogValue)) >> 2;
-    x_prev_analogValue = x_analogValue;
-    y_analogValue = (y_analogValue + (3*y_prev_analogValue)) >> 2;
-    y_prev_analogValue = y_analogValue;
-    x_diff= x_startAnalogValue - x_analogValue;
-    y_diff= y_startAnalogValue - y_analogValue;
+            if(y_diff>y_thrs && !b_right)
+            {
+                register_code(KC_RIGHT);
+                b_right = true;
+            }
+            else if(y_diff<=y_thrs && b_right)
+            {
+                unregister_code(KC_RIGHT);
+                b_right = false;
+            }
 
-    if(x_diff>x_thrs && !b_up)
-    {
-        register_code(KC_UP);
-        b_up = true;
-    }
-    else if(x_diff<=x_thrs && b_up) 
-    {
-        unregister_code(KC_UP);
-        b_up = false;
-    }
+            if(y_diff<-y_thrs && !b_left)
+            {
+                register_code(KC_LEFT);
+                b_left = true;
+            }
+            else if(y_diff>=-y_thrs && b_left) 
+            {
+                unregister_code(KC_LEFT);
+                b_left = false;
+            }
+        }
+        else
+        {
+            x_analogValue = analogReadPin(F7);
+            x_diff= x_startAnalogValue - x_analogValue;
+            
+            if(x_diff>x_thrs && !b_up)
+            {
+                register_code(KC_UP);
+                b_up = true;
+            }
+            else if(x_diff<=x_thrs && b_up)
+            {
+                unregister_code(KC_UP);
+                b_up = false;
+            }
 
-    if(x_diff<-x_thrs && !b_down)
-    {
-        register_code(KC_DOWN);
-        b_down = true;
-    }
-    else if(x_diff>=-x_thrs && b_down) 
-    {
-        unregister_code(KC_DOWN);
-        b_down = false;
-    }
-
-    if(y_diff>y_thrs && !b_left)
-    {
-        register_code(KC_LEFT);
-        b_left = true;
-    }
-    else if(y_diff<=y_thrs && b_left) 
-    {
-        unregister_code(KC_LEFT);
-        b_left = false;
-    }
-
-    if(y_diff<-y_thrs && !b_right)
-    {
-        register_code(KC_RIGHT);
-        b_right = true;
-    }
-    else if(y_diff>=-y_thrs && b_right) 
-    {
-        unregister_code(KC_RIGHT);
-        b_right = false;
-    }
-
-
-    /*if(x_analogValue == 0)
-    {
-        register_code(KC_UP);
+            if(x_diff<-x_thrs && !b_down)
+            {
+                register_code(KC_DOWN);
+                b_down = true;
+            }
+            else if(x_diff>=-x_thrs && b_down) 
+            {
+                unregister_code(KC_DOWN);
+                b_down = false;
+            }
+        }
     }
     else
     {
-        register_code(KC_DOWN);
+        writePinLow(F4);
+
+        if(b_up)
+        {
+            unregister_code(KC_UP);
+            b_up = false;
+        }
+        if(b_down) 
+        {
+            unregister_code(KC_DOWN);
+            b_down = false;
+        }
+        if(b_right)
+        {
+            unregister_code(KC_RIGHT);
+            b_right = false;
+        }
+        if(b_left) 
+        {
+            unregister_code(KC_LEFT);
+            b_left = false;
+        }
     }
-    if(y_analogValue == 0)
-    {
-        register_code(KC_LEFT);
-    }
-    else
-    {
-        register_code(KC_RIGHT);
-    }*/
+    //------------------------JOYSTICK LOOP - END  
 }
 
 /** \brief keyboard set leds

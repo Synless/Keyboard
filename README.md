@@ -1,9 +1,5 @@
 # Gaming keypad
-Mechanical keypad using 2xATMEL32U4 (one for QMK, the other one for xinput), a USB HUB, Cherry MX switches and a PSVita joystick :
-
-![](https://image.noelshack.com/fichiers/2021/45/2/1636447509-tangerine-1.jpg)
-
-![](https://image.noelshack.com/fichiers/2021/45/6/1636810429-3.png)
+Mechanical keypad using 2xATMEL32U4 (one for QMK, the other one for xinput), a USB HUB, Cherry MX switches and a PSVita joystick
 
 For the QMK part :
 - Add the files of the QMK part to a fresh QMK directory
@@ -16,3 +12,7 @@ For the Arduino part :
 - Add a xinpout variant `Arduino Leonardo w/ Xinput`
 - Select this variant in the board selector on the Arduino IDE
 - Flash and program the code
+
+![](https://image.noelshack.com/fichiers/2021/45/2/1636447509-tangerine-1.jpg)
+
+![](https://image.noelshack.com/fichiers/2021/45/6/1636810429-3.png)

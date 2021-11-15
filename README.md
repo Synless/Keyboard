@@ -9,4 +9,10 @@ For the QMK part :
 - Add the files of the QMK part to a fresh QMK directory
 - Open a linux terminal and navigate to the root or the QMK directory
 - Type "make synless:default"
-- Flash synless_default.hex using QMK Toolbox or any other programming software you prefer
+- Flash `synless_default.hex` using QMK Toolbox or any other programming software you prefer
+
+For the Arduino part :
+- Refer to https://github.com/dmadison/ArduinoXInput for this part
+- Add a xinpout variant of your board
+- Select this variant in the board selector on the Arduino IDE
+- Flash and program the code to the `Arduino Leonardo w/ Xinput`

@@ -13,6 +13,6 @@ For the QMK part :
 
 For the Arduino part :
 - Refer to https://github.com/dmadison/ArduinoXInput for this part
-- Add a xinpout variant of your board
+- Add a xinpout variant `Arduino Leonardo w/ Xinput`
 - Select this variant in the board selector on the Arduino IDE
-- Flash and program the code to the `Arduino Leonardo w/ Xinput`
+- Flash and program the code

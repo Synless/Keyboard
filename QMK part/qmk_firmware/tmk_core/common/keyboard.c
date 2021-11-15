@@ -239,7 +239,6 @@ extern "C"{
 
 
 //------------------------JOYSTICK VARAIBLES - START
-bool useLockingKey = true;
 bool useJoystick = true;
 
 int x_thrs = 100;

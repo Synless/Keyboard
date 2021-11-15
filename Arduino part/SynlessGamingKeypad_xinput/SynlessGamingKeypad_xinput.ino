@@ -1,4 +1,4 @@
-#include <XInput.h>
+#include <XInput.h> //https://github.com/dmadison/ArduinoXInput
 
 long x, y, x_start, y_start;
 

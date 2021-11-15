@@ -6,6 +6,6 @@ Mechanical keypad using 2xATMEL32U4 (one for QMK, the other one for xinput), a U
 ![](https://image.noelshack.com/fichiers/2021/45/6/1636810429-3.png)
 
 For the QMK part :
-- Copy the files of the QMK part to a fresh QMK directory
+- Add the files of the QMK part to a fresh QMK directory
 - Open a linux terminal and navigate to the root or the QMK directory
 - Type "make synless:default"

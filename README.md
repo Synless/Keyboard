@@ -9,8 +9,8 @@ For the QMK part :
 
 For the Arduino part :
 - Refer to https://github.com/dmadison/ArduinoXInput for this part
-- Add a xinpout variant `Arduino Leonardo w/ Xinput`
-- Select this variant in the board selector on the Arduino IDE
+- Add the xinpout variant `Arduino Leonardo w/ Xinput`
+- Select this variant in the board selector in the Arduino IDE
 - Flash and program the code
 
 ![](https://image.noelshack.com/fichiers/2021/45/2/1636447509-tangerine-1.jpg)

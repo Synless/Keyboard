@@ -7,7 +7,7 @@
 #define PRODUCT_ID      0x2019
 #define DEVICE_VER		0x0001
 #define MANUFACTURER    Synless
-#define PRODUCT         Keypad
+#define PRODUCT         Gaming keypad
 #define DESCRIPTION     Gaming keypad
 
 /* key matrix size */
@@ -28,3 +28,7 @@ PB4/PC7/PD6/PD4/PD3
 
 /* Set 0 if debouncing isn't needed */
 #define DEBOUNCE 5
+
+/* Change USB Polling Rate to 1000hz and a larger keys per scan for elite gaming*/
+#define USB_POLLING_INTERVAL_MS 1
+#define QMK_KEYS_PER_SCAN 12

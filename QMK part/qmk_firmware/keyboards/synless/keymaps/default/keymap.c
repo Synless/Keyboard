@@ -15,7 +15,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 //------------------------ PHYSICAL LAYOUT VARAIBLEST
-const bool useLockingKey = false;
+//const bool useLockingKey = false;
 const bool rightSideLayout = true;
 //------------------------ PHYSICAL LAYOUT VARAIBLEST
 
@@ -156,32 +156,27 @@ void housekeeping_task_user(void)
     }
 }
 
+bool mod_change = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
-	#ifdef CONSOLE_ENABLE
-	    uprintf("KL: kc: 0x%04X, col: %u, row: %u, pressed: %b, time: %u, interrupt: %b, count: %u\n", keycode, record->event.key.col, record->event.key.row, record->event.pressed, record->event.time, record->tap.interrupted, record->tap.count);
-	#endif
-
 	if(keycode==KC_6)
 	{
-		if(useLockingKey)
+		if(record->event.pressed)
 		{
-			//made to work with a Cherry MX lock on the top line1/column7			
-			useJoystick = record->event.pressed;
-			
-			return false;
+			kc_6_pressed = true;
 		}
 		else
 		{
-			#ifdef CONSOLE_ENABLE
-				uprintf("kc_6_pressed: %u\n", record->event.pressed);
-			#endif
+			kc_6_pressed = false;
 
-			kc_6_pressed = record->event.pressed;
+			if(!mod_change)
+				tap_code(keycode);			
 
-			return true;
+			mod_change = false;
 		}
+
+		return false;
 	}
 	else if(keycode==KC_SPC)
 	{
@@ -189,11 +184,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
 		{
 			if(kc_6_pressed)
 			{
-				#ifdef CONSOLE_ENABLE
-					uprintf("useJoystick: %u\n", useJoystick);
-				#endif
-
 				useJoystick = !useJoystick;
+				mod_change = true;
 
 				return false;
 			}

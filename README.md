@@ -2,8 +2,8 @@
 Mechanical keypad using 2xATMEL32U4 (one for QMK, the other one for xinput), a USB HUB, Cherry MX switches and a PSVita joystick
 
 For the QMK part :
-- Add the files of the QMK part to a fresh QMK directory
-- Open a linux terminal and navigate to the root or the QMK directory
+- Add the files of the QMK part to a QMK [keyboard] directory
+- Open a QMK MSYS terminal and navigate to the root or the QMK directory
 - Type "make synless:default"
 - Flash `synless_default.hex` using QMK Toolbox or any other programming software you prefer
 

@@ -23,7 +23,7 @@ void rumbleCallback(uint8_t packetType)
 {
     // If we have an LED packet (0x01), do nothing
     if (packetType == (uint8_t) XInputReceiveType::LEDs) { return; }
-  6666
+
     // If we have a rumble packet (0x00), see our rumble data on the LED
     else if (packetType == (uint8_t) XInputReceiveType::Rumble)
     {

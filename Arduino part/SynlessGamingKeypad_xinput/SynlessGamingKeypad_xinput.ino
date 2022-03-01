@@ -2,7 +2,7 @@
 #define RUMBLEOUTPUT 17
 
 long x, y, x_start, y_start;
-bool rightSideLayout = false;
+bool rightSideLayout = true;
 
 void setup()
 {
@@ -13,6 +13,10 @@ void setup()
     pinMode(A0,INPUT); //X or Y
     pinMode(A3,INPUT); //Chip select - Active LOW
     pinMode(A4,INPUT); //Right of left layout - LOW = joystick on the right, HIGH = joystick on the left
+            
+    rightSideLayout = analogRead(A4) < 1000;
+    if(rightSideLayout) { y_start = analogRead(A0); x_start = analogRead(A1); }
+    else { y_start = analogRead(A1); x_start = analogRead(A0); }
 
     XInput.setReceiveCallback(rumbleCallback);
     XInput.setAutoSend(true);
@@ -23,7 +27,7 @@ void rumbleCallback(uint8_t packetType)
 {
     // If we have an LED packet (0x01), do nothing
     if (packetType == (uint8_t) XInputReceiveType::LEDs) { return; }
-
+  
     // If we have a rumble packet (0x00), see our rumble data on the LED
     else if (packetType == (uint8_t) XInputReceiveType::Rumble)
     {
@@ -63,8 +67,8 @@ void loop()
         if(abs(x) > innerBorder_x) { innerBorder_x = abs(x); } //following the maximum value
         if(abs(y) > innerBorder_y) { innerBorder_y = abs(y); }
              
-        x = map(x,-innerBorder_x,innerBorder_x,-JoyMax,JoyMax) * 1.2;
-        y = map(y,-innerBorder_y,innerBorder_y,-JoyMax,JoyMax) * 1.2;
+        x = map(x,-innerBorder_x,innerBorder_x,-JoyMax,JoyMax) * 1.3;
+        y = map(y,-innerBorder_y,innerBorder_y,-JoyMax,JoyMax) * 1.3;
         x = max(-JoyMax,min(JoyMax,x)); //cropping maximum value to prevent 16 bits integer overflow
         y = max(-JoyMax,min(JoyMax,y));        
         

@@ -27,8 +27,6 @@ int16_t x_startAnalogValue = 0;
 int16_t y_startAnalogValue = 0;
 int16_t x_analogValue = 0;
 int16_t y_analogValue = 0;
-int16_t x_prev_analogValue = 0;
-int16_t y_prev_analogValue = 0;
 int16_t x_diff = 0;
 int16_t y_diff = 0;
 

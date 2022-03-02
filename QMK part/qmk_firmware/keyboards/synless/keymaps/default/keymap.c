@@ -1,23 +1,20 @@
 #include QMK_KEYBOARD_H
 #include "keyboard.h"
 #include "analog.h"
-#include "print.h"
 
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
+{
 	[0] = LAYOUT_default(
-		KC_ESC , KC_1 , KC_2 , KC_3 , KC_4, KC_5, KC_6,
-		KC_TAB , KC_Q , KC_W , KC_E , KC_R, KC_T, KC_Y,
-		KC_TAB , KC_A , KC_S , KC_D , KC_F, KC_G, KC_H,
-		_______ , KC_LSFT , KC_Z , KC_X , KC_C, KC_V, KC_RSFT,
-		_______ , KC_LCTL , KC_LWIN , KC_LOPT , KC_SPC, KC_RCTL, _______
+		KC_ESC , KC_1 	 , KC_2 	, KC_3 		, KC_4	, KC_5	 , KC_6,
+		KC_TAB , KC_Q 	 , KC_W 	, KC_E 		, KC_R 	, KC_T 	 , KC_Y,
+		KC_TAB , KC_A 	 , KC_S 	, KC_D 		, KC_F 	, KC_G 	 , KC_H,
+		_______, KC_LSFT , KC_Z 	, KC_X 		, KC_C 	, KC_V 	 , _______,
+		_______, KC_LCTL , KC_LWIN 	, KC_LOPT 	, KC_SPC, _______, _______
     )
 };
 
-
-//------------------------ PHYSICAL LAYOUT VARAIBLEST
-//const bool useLockingKey = false;
+//------------------------ PHYSICAL LAYOUT VARAIBLES
 const bool rightSideLayout = true;
-//------------------------ PHYSICAL LAYOUT VARAIBLEST
 
 
 //------------------------ JOYSTICK VARIABLES - START
@@ -41,34 +38,23 @@ bool b_up = false;
 bool b_down = false;
 
 bool left_right_or_up_down = false;
-bool kc_6_pressed = false;
 //------------------------ JOYSTICK VARIABLES - END
 
 
 void keyboard_post_init_user(void)
 {
-	#ifdef CONSOLE_ENABLE
-	    uprintf("keyboard_post_init_user\n");
-	#endif
-
-    //analog.c -------------- JOYSTICK INIT
+    //analog.c ----------- JOYSTICK INIT
+    setPinOutput(F1);
+    setPinOutput(F4);
     setPinInput(F7);
     setPinInput(F6);
     x_startAnalogValue = analogReadPin(F7);
     y_startAnalogValue = analogReadPin(F6);
-    setPinOutput(F1);
-    setPinOutput(F4);
-
-	// Customise these values to desired behaviour
-	//debug_enable=true;
-	//debug_matrix=true;
-	//debug_keyboard=true;
-	//debug_mouse=true;
 }
 
 void housekeeping_task_user(void)
 {
-	if(useJoystick)
+    if(useJoystick)
     {
         left_right_or_up_down = !left_right_or_up_down;
         
@@ -156,6 +142,7 @@ void housekeeping_task_user(void)
     }
 }
 
+bool kc_6_pressed = false;
 bool mod_change = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record)

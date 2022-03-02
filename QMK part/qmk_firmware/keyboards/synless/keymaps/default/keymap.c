@@ -4,17 +4,17 @@
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] =
 {
-	[0] = LAYOUT_default(
-		KC_ESC , KC_1 	 , KC_2 	, KC_3 		, KC_4	, KC_5	 , KC_6,
-		KC_TAB , KC_Q 	 , KC_W 	, KC_E 		, KC_R 	, KC_T 	 , KC_Y,
-		KC_TAB , KC_A 	 , KC_S 	, KC_D 		, KC_F 	, KC_G 	 , KC_H,
-		_______, KC_LSFT , KC_Z 	, KC_X 		, KC_C 	, KC_V 	 , _______,
-		_______, KC_LCTL , KC_LWIN 	, KC_LOPT 	, KC_SPC, _______, _______
+    [0] = LAYOUT_default(
+        KC_ESC , KC_1    , KC_2    , KC_3    , KC_4   , KC_5    , KC_6,
+        KC_TAB , KC_Q    , KC_W    , KC_E    , KC_R   , KC_T    , KC_Y,
+        KC_TAB , KC_A    , KC_S    , KC_D    , KC_F   , KC_G    , KC_H,
+        _______, KC_LSFT , KC_Z    , KC_X    , KC_C   , KC_V    , _______,
+        _______, KC_LCTL , KC_LWIN , KC_LOPT , KC_SPC , _______ , _______
     )
 };
 
 //------------------------ PHYSICAL LAYOUT VARAIBLES
-const bool rightSideLayout = true;
+const bool rightSideLayout = false;
 
 
 //------------------------ JOYSTICK VARIABLES - START
@@ -46,8 +46,19 @@ void keyboard_post_init_user(void)
     setPinOutput(F4);
     setPinInput(F7);
     setPinInput(F6);
-    x_startAnalogValue = analogReadPin(F7);
-    y_startAnalogValue = analogReadPin(F6);
+    
+    if(rightSideLayout)
+    {
+        writePinHigh(F1);
+        x_startAnalogValue = analogReadPin(F7);
+        y_startAnalogValue = analogReadPin(F6);
+    }
+    else
+    {
+        writePinLow(F1);
+        y_startAnalogValue = analogReadPin(F7);
+        x_startAnalogValue = analogReadPin(F6);
+    }
 }
 
 void housekeeping_task_user(void)
@@ -73,24 +84,24 @@ void housekeeping_task_user(void)
 
             if(y_diff>y_thrs && !b_right)
             {
-            	register_code(KC_RIGHT);
-            	b_right = true;
+                register_code(KC_RIGHT);
+                b_right = true;
             }
             else if(y_diff<=y_thrs && b_right) 
             {
-            	unregister_code(KC_RIGHT);
-            	b_right = false;
+                unregister_code(KC_RIGHT);
+                b_right = false;
             }
 
             if(y_diff<-y_thrs && !b_left)
             {
-            	register_code(KC_LEFT);
-            	b_left = true; 
+                register_code(KC_LEFT);
+                b_left = true; 
             }
             else if(y_diff>=-y_thrs && b_left)
             {
-            	unregister_code(KC_LEFT);
-            	b_left = false;
+                unregister_code(KC_LEFT);
+                b_left = false;
             }
         }
         else
@@ -108,24 +119,24 @@ void housekeeping_task_user(void)
             
             if(x_diff>x_thrs && !b_up)
             {
-            	register_code(KC_UP);
-            	b_up = true;
+                register_code(KC_UP);
+                b_up = true;
             }
             else if(x_diff<=x_thrs && b_up)
             {
-            	unregister_code(KC_UP);
-            	b_up = false;
+                unregister_code(KC_UP);
+                b_up = false;
             }
 
             if(x_diff<-x_thrs && !b_down)
             {
-            	register_code(KC_DOWN);
-            	b_down = true; 
+                register_code(KC_DOWN);
+                b_down = true; 
             }
             else if(x_diff>=-x_thrs && b_down)
             {
-            	unregister_code(KC_DOWN);
-            	b_down = false;
+                unregister_code(KC_DOWN);
+                b_down = false;
             }
         }
     }
@@ -133,10 +144,10 @@ void housekeeping_task_user(void)
     {
         writePinLow(F4);
 
-        if(b_up) 	{ unregister_code(KC_UP); 	b_up = false; 	}
+        if(b_up)     { unregister_code(KC_UP);     b_up = false;     }
         if(b_down)  { unregister_code(KC_DOWN); b_down = false; }
         if(b_right) { unregister_code(KC_RIGHT);b_right = false;}
-        if(b_left) 	{ unregister_code(KC_LEFT); b_left = false; }
+        if(b_left)     { unregister_code(KC_LEFT); b_left = false; }
     }
 }
 
@@ -145,37 +156,37 @@ bool mod_change = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
-	if(keycode==KC_6)
-	{
-		if(record->event.pressed)
-		{
-			kc_6_pressed = true;
-		}
-		else
-		{
-			kc_6_pressed = false;
+    if(keycode==KC_6)
+    {
+        if(record->event.pressed)
+        {
+            kc_6_pressed = true;
+        }
+        else
+        {
+            kc_6_pressed = false;
 
-			if(!mod_change)
-				tap_code(keycode);			
+            if(!mod_change)
+                tap_code(keycode);            
 
-			mod_change = false;
-		}
+            mod_change = false;
+        }
 
-		return false;
-	}
-	else if(keycode==KC_SPC)
-	{
-		if(record->event.pressed)
-		{
-			if(kc_6_pressed)
-			{
-				useJoystick = !useJoystick;
-				mod_change = true;
+        return false;
+    }
+    else if(keycode==KC_SPC)
+    {
+        if(record->event.pressed)
+        {
+            if(kc_6_pressed)
+            {
+                useJoystick = !useJoystick;
+                mod_change = true;
 
-				return false;
-			}
-		}
-	}
+                return false;
+            }
+        }
+    }
 
-	return true;
+    return true;
 }

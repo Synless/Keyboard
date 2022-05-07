@@ -1,5 +1,5 @@
 # Gaming keypad
-Mechanical keypad using 2xATMEL32U4 (one for QMK, the other one for xinput), a USB HUB, Cherry MX switches and a PSVita joystick
+Mechanical keypad using two Atmel Atmega32u4 (one for QMK, the other one for xinput), a USB HUB, Cherry MX switches and a PSVita joystick
 
 For the QMK part :
 - Add the files of the QMK part to a QMK [keyboard] directory

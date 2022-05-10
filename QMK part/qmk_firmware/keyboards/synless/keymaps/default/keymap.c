@@ -65,7 +65,7 @@ void housekeeping_task_user(void)
 {
     if(useJoystick)
     {
-        left_right_or_up_down = !left_right_or_up_down;
+        left_right_or_up_down = !left_right_or_up_down; //ONLY CHECKING ONCE EVERY OTHER LOOP UP-DOWN OR LEFT-RIGHT
         
         writePinHigh(F4);
 
@@ -144,15 +144,18 @@ void housekeeping_task_user(void)
     {
         writePinLow(F4);
 
-        if(b_up)     { unregister_code(KC_UP);     b_up = false;     }
+        if(b_up)    { unregister_code(KC_UP); b_up = false; }
         if(b_down)  { unregister_code(KC_DOWN); b_down = false; }
-        if(b_right) { unregister_code(KC_RIGHT);b_right = false;}
-        if(b_left)     { unregister_code(KC_LEFT); b_left = false; }
+        if(b_right) { unregister_code(KC_RIGHT); b_right= false; }
+        if(b_left)  { unregister_code(KC_LEFT); b_left = false; }
     }
 }
 
-bool kc_6_pressed = false;
-bool mod_change = false;
+bool kc_6_pressed = false; //VARIABLE USED TO CHANGE FROM QMK TO XINPUT MODE
+bool mod_change = false; //VARIABLE USED TO CHANGE FROM QMK TO XINPUT MODE
+
+bool kc_alt_pressed = false; //VARIABLE USED TO PREVENT ALT+TAB
+bool kc_tab_pressed = false; //VARIABLE USED TO PREVENT ALT+TAB
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
@@ -186,6 +189,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             }
         }
+    }
+    else if(keycode==KC_LOPT)
+    {
+        kc_alt_pressed = record->event.pressed;
+
+        if(kc_tab_pressed)
+            unregister_code(KC_TAB);
+    }
+    else if(keycode==KC_TAB)
+    {
+        kc_tab_pressed = record->event.pressed;
+        
+        if(kc_alt_pressed)
+            return false;
     }
 
     return true;

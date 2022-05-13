@@ -1,58 +1,44 @@
-#include <XInput.h>
-#define RUMBLEOUTPUT 17
-
-#include <EEPROM.h>
-#define EEPROM_ADR 0
+#include <XInput.h> //SEE https://github.com/dmadison/ArduinoXInput 
+#define RUMBLEOUTPUT 17 //USED TO CONTROL THE RUMBLE MOTOR
 
 long x, y, x_start, y_start;
 bool rightSideLayout = true;
-
-void(* resetFunc) (void) = 0;
 
 void setup()
 {  
   pinMode(RUMBLEOUTPUT, OUTPUT);
   digitalWrite(RUMBLEOUTPUT, HIGH);
 
-  pinMode(A1, INPUT); //X or Y
-  pinMode(A0, INPUT); //X or Y
-  pinMode(A3, INPUT); //Chip select - Active LOW
-  pinMode(A4, INPUT); //Right of left layout - LOW = joystick on the right, HIGH = joystick on the left
+  pinMode(A1, INPUT); //X OR Y
+  pinMode(A0, INPUT); //X OR Y
+  pinMode(A3, INPUT); //CHIP SELECT - ACTIVE LOW
+  pinMode(A4, INPUT); //RIGHT OF LEFT SIDE LAYOUT - LOW = JOYSTICK ON THE RIGHT, HIGH = JOYSTICK ON THE LEFT
 
   rightSideLayout = analogRead(A4) < 1000;
-  if (rightSideLayout) {
+
+  if (rightSideLayout)
+  {
     y_start = analogRead(A0);
     x_start = analogRead(A1);
   }
-  else {
+  else
+  {
     y_start = analogRead(A1);
     x_start = analogRead(A0);
   }
 
-  int eeprom_value = EEPROM.read(EEPROM_ADR);
-  if(eeprom_value==0)
-  {
-    EEPROM.write(EEPROM_ADR,1);
-  }
-  else
-  {
-    EEPROM.write(EEPROM_ADR,0);
-    resetFunc();
-  }
-
-  XInput.setReceiveCallback(rumbleCallback);
+  //THE RUMBLE PART DOES WORK VERY WELL WITH XINPUT CALLBACKS
+  //XInput.setReceiveCallback(rumbleCallback);
+  
   XInput.setAutoSend(true);
   XInput.begin();
 }
 
 void rumbleCallback(uint8_t packetType)
-{
-  //Joystick does not work so well for now
-  return;
-
-  
+{  
   // If we have an LED packet (0x01), do nothing
-  if (packetType == (uint8_t) XInputReceiveType::LEDs) {
+  if (packetType == (uint8_t) XInputReceiveType::LEDs)
+  {
     return;
   }
 
@@ -66,11 +52,12 @@ void rumbleCallback(uint8_t packetType)
 }
 
 const int JoyMax = 32767;
-const int deadZone = 1000;
-int innerBorder_x = 260;
-int innerBorder_y = 260;
+const int deadZone = 1000; //BELOW THIS VALUE, VALUE = 0
+int innerBorder_x = 260; //THRESHOLD FOR THE X AXIS
+int innerBorder_y = 260; //THRESHOLD FOR THE Y AXIS
 bool once = true;
-int step = 1;
+
+int step = 1; //USED TO NOT BLOCK THE MAIN TASK WHILE MANAGING THE RUMBLE MOTOR
 long t1 = 0;
 long t2 = 0;
 
@@ -78,11 +65,15 @@ void loop()
 {
   t1 = millis();
 
-  if (analogRead(A3) < 1000) //digitalRead does not work for some reason
+  //JOYSTICK PART - START ----------------------------------------------------------------
+  if (analogRead(A3) < 1000) //digitalRead DOES NOT WORK FOR SOME REASON
   {
-    if (!once) //if this is the first activated cycle ...
+    if (!once) //IF THIS IS THE FIRST ACTIVATED CYCLE
     {
-      rightSideLayout = analogRead(A4) < 1000;
+      rightSideLayout = analogRead(A4) < 1000; //RIGHT OR LEFT LAYOUT IS DETERMINED BY QMK
+
+      //READING THE JOYSTICK VALUE HAS TO BE DIFFERENT FROM
+      //THE RIGHT SIDE LAYOUT TO THE LEFT SIDE LAYOUT
 
       if (rightSideLayout)
       {
@@ -112,24 +103,25 @@ void loop()
       x = analogRead(A0) - x_start;
     }
 
-    if (abs(x) > innerBorder_x) {
-      innerBorder_x = abs(x);  //following the maximum value
-    }
-    if (abs(y) > innerBorder_y) {
-      innerBorder_y = abs(y);
-    }
+    //THE BORDERS FOLLOW THE MAXIMUM VALUES READ
+    if (abs(x) > innerBorder_x)
+      innerBorder_x = abs(x);
 
+    if (abs(y) > innerBorder_y)
+      innerBorder_y = abs(y);
+
+    //HERE, THE VALUES ARE ENHANCED THEN CROPPED IT IS GOES BEYONG 16 BITS TO PREVENT AN OVERFLOW 
     x = map(x, -innerBorder_x, innerBorder_x, -JoyMax, JoyMax) * 1.25;
     y = map(y, -innerBorder_y, innerBorder_y, -JoyMax, JoyMax) * 1.25;
-    x = max(-JoyMax, min(JoyMax, x)); //cropping maximum value to prevent 16 bits integer overflow
+    x = max(-JoyMax, min(JoyMax, x));
     y = max(-JoyMax, min(JoyMax, y));
 
-    if (x > -deadZone && x < deadZone) {
-      x = 0; //if the value is too small, replace by 0
-    }
-    if (y > -deadZone && y < deadZone) {
+    //IF THE VALUES ARE TOO SMALL, REPLACE THEM BY 0
+    if (x > -deadZone && x < deadZone)
+      x = 0;
+    
+    if (y > -deadZone && y < deadZone)
       y = 0;
-    }
 
     XInput.setJoystick(JOY_LEFT, (int)x, (int)y);
   }
@@ -140,8 +132,11 @@ void loop()
     t2 = millis();
     XInput.setJoystick(JOY_LEFT, 0, 0);
   }
+  //JOYSTICK PART - END ------------------------------------------------------------------
 
-  //async rumble when changing mode
+
+  //JOYSTICK RUMBLE - START --------------------------------------------------------------
+  //ASYNC RUMBLE WHEN CHANGING MODE
   if (step == 1)
   {
     digitalWrite(RUMBLEOUTPUT, LOW);
@@ -194,4 +189,5 @@ void loop()
     t2 = t1;
     step = 0;
   }
+  //JOYSTICK RUMBLE - END ----------------------------------------------------------------
 }

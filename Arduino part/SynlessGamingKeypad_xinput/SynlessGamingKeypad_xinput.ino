@@ -2,7 +2,7 @@
 #define RUMBLEOUTPUT 17 //USED TO CONTROL THE RUMBLE MOTOR
 
 long x, y, x_start, y_start;
-bool rightSideLayout = true;
+const bool rightSideLayout = true;
 
 void setup()
 {  
@@ -26,7 +26,7 @@ void setup()
     y_start = analogRead(A1);
     x_start = analogRead(A0);
   }
-
+  
   //THE RUMBLE PART DOES WORK VERY WELL WITH XINPUT CALLBACKS
   //XInput.setReceiveCallback(rumbleCallback);
   
@@ -70,38 +70,18 @@ void loop()
   {
     if (!once) //IF THIS IS THE FIRST ACTIVATED CYCLE
     {
-      rightSideLayout = analogRead(A4) < 1000; //RIGHT OR LEFT LAYOUT IS DETERMINED BY QMK
-
-      //READING THE JOYSTICK VALUE HAS TO BE DIFFERENT FROM
-      //THE RIGHT SIDE LAYOUT TO THE LEFT SIDE LAYOUT
-
-      if (rightSideLayout)
-      {
-        y_start = analogRead(A0);
-        x_start = analogRead(A1);
-      }
-      else
-      {
-        y_start = analogRead(A1);
-        x_start = analogRead(A0);
-      }
-
+      y_start = analogRead(A0);
+      x_start = analogRead(A1);
+      
       step = 1;
       t2 = millis();
     }
 
     once = true;
 
-    if (rightSideLayout)
-    {
-      y = y_start - analogRead(A0);
-      x = x_start - analogRead(A1);
-    }
-    else
-    {
-      y = y_start - analogRead(A1);
-      x = analogRead(A0) - x_start;
-    }
+    y = y_start - analogRead(A0);
+    x = x_start - analogRead(A1);
+    
 
     //THE BORDERS FOLLOW THE MAXIMUM VALUES READ
     if (abs(x) > innerBorder_x)

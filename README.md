@@ -14,6 +14,4 @@ For the Arduino part :
 - Select this variant in the board selector in the Arduino IDE
 - Flash and program the code
 
-![](https://image.noelshack.com/fichiers/2021/45/2/1636447509-tangerine-1.jpg)
-
-![](https://image.noelshack.com/fichiers/2021/45/6/1636810429-3.png)
+![O_1](https://github.com/user-attachments/assets/7c29b2bc-e8a8-4185-a532-5f9d2e1ed24d)
